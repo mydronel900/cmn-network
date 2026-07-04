@@ -66,19 +66,19 @@
             <div class="w-full max-w-md mx-auto bg-gray-900/40 p-2 rounded-xl border border-gray-800/80 backdrop-blur glow-effect mb-8">
                 <form 
                     id="waitlist-form" 
-                    action="https://app.loops.so/api/newsletter-form/cmr5w3x6k2c2q0j56oyu0o7dv" 
-                    method="POST" 
                     class="flex flex-col sm:flex-row gap-2"
                 >
                     <input 
                         type="email" 
                         name="email"
+                        id="email-field"
                         required 
                         placeholder="Enter your email address" 
                         class="w-full bg-black/60 border border-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition text-gray-200 placeholder-gray-600"
                     >
                     <button 
                         type="submit" 
+                        id="submit-btn"
                         class="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold px-6 py-3 rounded-lg text-sm transition tracking-wide whitespace-nowrap"
                     >
                         RESERVE GENESIS NODE ID
@@ -140,11 +140,11 @@
 
         if (waitlistForm && displayContainer) {
             waitlistForm.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Prevents the browser from blasting away from our app canvas
+                e.preventDefault(); // Lock browser canvas state
                 
-                const button = waitlistForm.querySelector('button');
-                const emailInput = waitlistForm.querySelector('input[name="email"]');
-                const formData = new FormData(waitlistForm);
+                const button = document.getElementById('submit-btn');
+                const emailInput = document.getElementById('email-field');
+                const emailValue = emailInput.value;
                 
                 // Visual intermediate state update
                 button.innerText = "MINTING SECURE ACCOUNT...";
@@ -152,12 +152,20 @@
                 button.classList.add('opacity-50');
 
                 try {
-                    // Send transaction to Loops' data ledger quietly in background
-                    const response = await fetch(waitlistForm.action, {
+                    // Send JSON payload directly to our internal secure Vercel edge function
+                    const response = await fetch('/api/custom-loops', {
                         method: 'POST',
-                        body: formData,
-                        mode: 'cors'
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: emailValue })
                     });
+
+                    const result = await response.json();
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || 'Server database rejected ingestion loop.');
+                    }
 
                     // Update top system dashboard state indicator
                     document.getElementById('system-status').innerHTML = "● ACCESS HOLD GRANTED";
@@ -165,7 +173,7 @@
 
                     // Morph the screen canvas instantly into the elite Post-Submission Station
                     displayContainer.innerHTML = `
-                        <div class="max-w-md mx-auto bg-gradient-to-b from-gray-900/80 to-black/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur glow-success animate-[fadeIn_0.5s_ease-out]">
+                        <div class="max-w-md mx-auto bg-gradient-to-b from-gray-900/80 to-black/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur glow-success scale-up-animation">
                             
                             <!-- Success Matrix Check Indicator -->
                             <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
@@ -183,19 +191,15 @@
 
                             <!-- Social Network Matrix Channels Gateway Grid -->
                             <div class="grid grid-cols-2 gap-3 mb-4">
-                                <!-- X / Twitter Direct Link -->
                                 <a href="https://x.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
                                     <span class="text-gray-400 group-hover:text-white font-bold">X Protocol</span>
                                 </a>
-                                <!-- TikTok Pipeline Link -->
                                 <a href="https://tiktok.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
                                     <span class="text-gray-400 group-hover:text-white font-bold">TikTok Feed</span>
                                 </a>
-                                <!-- Instagram Visuals Link -->
                                 <a href="https://instagram.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
                                     <span class="text-gray-400 group-hover:text-white font-bold">Instagram</span>
                                 </a>
-                                <!-- YouTube Blueprint Breakdown Link -->
                                 <a href="https://youtube.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
                                     <span class="text-gray-400 group-hover:text-white font-bold">YouTube Blueprint</span>
                                 </a>
@@ -205,12 +209,13 @@
 
                 } catch (error) {
                     console.error('System synchronization exception:', error);
-                    // Failover option: If network intercept fails, forcefully pass normal form submission down the stack
-                    waitlistForm.submit();
+                    button.innerText = "RETRY ASSIGNMENT";
+                    button.disabled = false;
+                    button.classList.remove('opacity-50');
+                    alert("Sync Lag detected. Check internet signal grid or try refreshing.");
                 }
             });
         }
     </script>
 </body>
 </html>
-
