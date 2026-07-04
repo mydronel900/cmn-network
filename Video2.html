@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMN Teaser Asset Generator - Video 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #050508;
+        }
+        .text-animate {
+            display: none;
+            animation: textPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
+        }
+        @keyframes textPop {
+            0% { transform: scale(0.9); opacity: 0; filter: brightness(2); }
+            100% { transform: scale(1); opacity: 1; filter: brightness(1); }
+        }
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(34, 197, 94, 0.04) 50%,
+                rgba(255,255,255,0)
+            );
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen overflow-hidden select-none">
+
+    <!-- Exact 9:16 Mobile Viewport Container -->
+    <div id="video-canvas" class="w-[360px] h-[640px] bg-[#0A0B10] relative flex flex-col justify-between p-8 overflow-hidden border border-gray-900 shadow-2xl">
+        
+        <!-- Ambient Grid Glow -->
+        <div class="absolute inset-0 scanline opacity-30 pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <!-- Top Status Layer -->
+        <div class="w-full flex justify-between items-center z-10 text-[10px] tracking-widest text-gray-500 font-mono">
+            <div>SYS.LOG // DATA_LEAK_02</div>
+            <div class="text-green-400 font-bold animate-pulse">● INTERCEPT ACTIVE</div>
+        </div>
+
+        <!-- Main Dynamic Text Stage -->
+        <div class="w-full text-center z-10 px-4 my-auto min-h-[180px] flex items-center justify-center">
+            
+            <div id="slide-1" class="text-animate text-2xl text-gray-400 font-medium leading-snug">
+                Every time you buy a game, <br> a digital voucher, or a skin...
+            </div>
+
+            <div id="slide-2" class="text-animate text-3xl text-white font-bold tracking-tight">
+                Apple, Google, and Steam take a predatory <span class="text-red-400">30% cut</span>.
+            </div>
+
+            <div id="slide-3" class="text-animate text-3xl font-bold tracking-tight text-white leading-tight">
+                That is not a platform fee. <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">THAT IS AN ECONOMIC TAX.</span>
+            </div>
+
+            <div id="slide-4" class="text-animate text-2xl text-gray-300 leading-normal">
+                We engineered a parallel loop that bypasses them entirely.
+            </div>
+
+            <div id="slide-5" class="text-animate text-3xl font-bold text-white tracking-tight leading-snug">
+                No permission required. <br> No intermediate gatekeepers.
+            </div>
+
+            <div id="slide-6" class="text-animate w-full">
+                <div class="text-xs font-mono text-green-400 tracking-widest mb-3">PARALLEL ECONOMIC ENGINE</div>
+                <h2 class="text-4xl font-extrabold text-white tracking-tighter mb-4">LOCK IN GENESIS ID</h2>
+                <div class="inline-block bg-gray-900 border border-gray-800 text-[10px] text-gray-400 px-3 py-1.5 rounded-full font-mono">
+                    JOIN COHORT_01 // cmn.network
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Interface Layer -->
+        <div class="w-full flex justify-between items-center z-10 text-[9px] font-mono text-gray-600 tracking-wider">
+            <div>THE COMMON PROTOCOL</div>
+            <div>SYS_STAGE_1</div>
+        </div>
+
+        <!-- Floating UI Controller -->
+        <button id="play-btn" class="absolute bottom-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold px-6 py-2.5 rounded-full shadow-lg transition tracking-widest">
+            RUN VIDEO SEQUENCE
+        </button>
+    </div>
+
+    <!-- Scripted Video Sequence Automation -->
+    <script>
+        const playBtn = document.getElementById('play-btn');
+        const slides = [
+            { id: 'slide-1', duration: 2400 },
+            { id: 'slide-2', duration: 2200 },
+            { id: 'slide-3', duration: 2500 },
+            { id: 'slide-4', duration: 2500 },
+            { id: 'slide-5', duration: 2400 },
+            { id: 'slide-6', duration: 4000 }
+        ];
+
+        playBtn.addEventListener('click', () => {
+            playBtn.style.display = 'none'; 
+            let currentDelay = 200;
+
+            slides.forEach((slide, index) => {
+                setTimeout(() => {
+                    slides.forEach(s => document.getElementById(s.id).style.display = 'none');
+                    const currentEl = document.getElementById(slide.id);
+                    currentEl.style.display = 'block';
+                    
+                    if (index === slides.length - 1) {
+                        setTimeout(() => {
+                            playBtn.style.display = 'block';
+                            playBtn.innerText = "RESTART INTERCEPT LOOP";
+                        }, slide.duration);
+                    }
+                }, currentDelay);
+
+                currentDelay += slide.duration;
+            });
+        });
+    </script>
+</body>
+</html>

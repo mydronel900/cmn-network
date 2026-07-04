@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Common (CMN) | Stop the Bleeding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0B0C10;
+        }
+        .glow-effect {
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
+        }
+        .glow-success {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
+        }
+    </style>
+</head>
+<body class="text-gray-100 flex flex-col min-h-screen justify-between relative overflow-hidden">
+
+    <!-- Ambient Glowing Background Elements -->
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-green-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="w-full max-w-6xl mx-auto px-6 py-6 flex justify-between items-center z-10">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-bold tracking-wider text-green-400">CMN</span>
+            <span class="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-semibold border border-gray-700">DGEA Protocol</span>
+        </div>
+        <div class="text-sm text-gray-400">
+            System State: <span id="system-status" class="text-green-400 font-mono animate-pulse">● STAGE 1 ACTIVE</span>
+        </div>
+    </header>
+
+    <!-- Main Content Dynamic Container -->
+    <main class="w-full max-w-3xl mx-auto px-6 text-center py-12 z-10 my-auto">
+        
+        <div id="interactive-card">
+            <!-- Live Human Counter Badge -->
+            <div class="inline-flex items-center gap-2 bg-gray-900/80 border border-gray-800 px-4 py-2 rounded-full mb-8 backdrop-blur">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <p class="text-xs text-gray-300 font-mono">
+                    <span id="user-count" class="font-bold text-green-400 text-sm">42,109</span> VERIFIED HUMANS REGISTERED
+                </p>
+            </div>
+
+            <!-- Heavy Hitting Headline -->
+            <h1 class="text-4xl sm:text-6xl font-bold tracking-tight mb-6 leading-[1.1] text-white">
+                YOUR MONEY IS A <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">MELTING ICE CUBE.</span>
+            </h1>
+
+            <!-- Contextual Value Proposition -->
+            <p class="text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
+                Every second your wealth sits in standard fiat currencies, inflation quietly drains its value. Stop the bleeding. Welcome to the world's first inflation-proof, 100% asset-backed parallel economic network.
+            </p>
+
+            <!-- Waitlist Capture Module -->
+            <div class="w-full max-w-md mx-auto bg-gray-900/40 p-2 rounded-xl border border-gray-800/80 backdrop-blur glow-effect mb-8">
+                <form 
+                    id="waitlist-form" 
+                    action="https://app.loops.so/api/newsletter-form/cmr5w3x6k2c2q0j56oyu0o7dv" 
+                    method="POST" 
+                    class="flex flex-col sm:flex-row gap-2"
+                >
+                    <input 
+                        type="email" 
+                        name="email"
+                        required 
+                        placeholder="Enter your email address" 
+                        class="w-full bg-black/60 border border-gray-800 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition text-gray-200 placeholder-gray-600"
+                    >
+                    <button 
+                        type="submit" 
+                        class="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold px-6 py-3 rounded-lg text-sm transition tracking-wide whitespace-nowrap"
+                    >
+                        RESERVE GENESIS NODE ID
+                    </button>
+                </form>
+            </div>
+
+            <!-- Countdown Timer Segment -->
+            <div class="flex justify-center gap-6 font-mono text-xs text-gray-500 uppercase tracking-widest">
+                <div><span id="days" class="text-xl font-bold text-gray-300 block">14</span> Days</div>
+                <div><span id="hours" class="text-xl font-bold text-gray-300 block">02</span> Hrs</div>
+                <div><span id="minutes" class="text-xl font-bold text-gray-300 block">45</span> Min</div>
+                <div><span id="seconds" class="text-xl font-bold text-gray-300 block">12</span> Sec</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Simple Legal Trust Footer -->
+    <footer class="w-full text-center py-6 text-xs text-gray-600 z-10 border-t border-gray-950">
+        © 2026 The Common Architecture. Zero Permission Required.
+    </footer>
+
+    <!-- Core Interactive Systems Script -->
+    <script>
+        // Simulated Live Rolling Counter
+        let count = 42109;
+        setInterval(() => {
+            count += Math.floor(Math.random() * 3) + 1;
+            const element = document.getElementById('user-count');
+            if (element) element.innerText = count.toLocaleString();
+        }, 4000);
+
+        // Simple System Countdown Timer Logic
+        let totalSeconds = (14 * 24 * 3600) + (2 * 3600) + (45 * 60) + 12;
+        setInterval(() => {
+            if (totalSeconds > 0) {
+                totalSeconds--;
+                let d = Math.floor(totalSeconds / (24 * 3600));
+                let h = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+                let m = Math.floor((totalSeconds % 3600) / 60);
+                let s = totalSeconds % 60;
+                
+                const dEl = document.getElementById('days');
+                const hEl = document.getElementById('hours');
+                const mEl = document.getElementById('minutes');
+                const sEl = document.getElementById('seconds');
+
+                if (dEl) dEl.innerText = String(d).padStart(2, '0');
+                if (hEl) hEl.innerText = String(h).padStart(2, '0');
+                if (mEl) mEl.innerText = String(m).padStart(2, '0');
+                if (sEl) sEl.innerText = String(s).padStart(2, '0');
+            }
+        }, 1000);
+
+        // Asynchronous Form Intercept & Interface Transformation Engine
+        const waitlistForm = document.getElementById('waitlist-form');
+        const displayContainer = document.getElementById('interactive-card');
+
+        if (waitlistForm && displayContainer) {
+            waitlistForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevents the browser from blasting away from our app canvas
+                
+                const button = waitlistForm.querySelector('button');
+                const emailInput = waitlistForm.querySelector('input[name="email"]');
+                const formData = new FormData(waitlistForm);
+                
+                // Visual intermediate state update
+                button.innerText = "MINTING SECURE ACCOUNT...";
+                button.disabled = true;
+                button.classList.add('opacity-50');
+
+                try {
+                    // Send transaction to Loops' data ledger quietly in background
+                    const response = await fetch(waitlistForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'cors'
+                    });
+
+                    // Update top system dashboard state indicator
+                    document.getElementById('system-status').innerHTML = "● ACCESS HOLD GRANTED";
+                    document.getElementById('system-status').className = "text-emerald-400 font-mono font-bold";
+
+                    // Morph the screen canvas instantly into the elite Post-Submission Station
+                    displayContainer.innerHTML = `
+                        <div class="max-w-md mx-auto bg-gradient-to-b from-gray-900/80 to-black/40 border border-emerald-500/30 rounded-2xl p-8 backdrop-blur glow-success animate-[fadeIn_0.5s_ease-out]">
+                            
+                            <!-- Success Matrix Check Indicator -->
+                            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </div>
+
+                            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">GENESIS NODE SECURED</h2>
+                            <p class="text-xs font-mono text-emerald-400 mb-4 tracking-wider uppercase">Credentials Logged Successfully</p>
+                            
+                            <p class="text-sm text-gray-400 mb-8 leading-relaxed">
+                                Your temporary node assignment has been logged into the ledger queue. We are progressively opening the technical information faucet in stages. Track development leaks across our operational pipelines below:
+                            </p>
+
+                            <!-- Social Network Matrix Channels Gateway Grid -->
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <!-- X / Twitter Direct Link -->
+                                <a href="https://x.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
+                                    <span class="text-gray-400 group-hover:text-white font-bold">X Protocol</span>
+                                </a>
+                                <!-- TikTok Pipeline Link -->
+                                <a href="https://tiktok.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
+                                    <span class="text-gray-400 group-hover:text-white font-bold">TikTok Feed</span>
+                                </a>
+                                <!-- Instagram Visuals Link -->
+                                <a href="https://instagram.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
+                                    <span class="text-gray-400 group-hover:text-white font-bold">Instagram</span>
+                                </a>
+                                <!-- YouTube Blueprint Breakdown Link -->
+                                <a href="https://youtube.com" target="_blank" class="flex items-center justify-center gap-2 bg-gray-950 border border-gray-800 hover:border-gray-600 px-4 py-3 rounded-xl transition group text-sm font-semibold">
+                                    <span class="text-gray-400 group-hover:text-white font-bold">YouTube Blueprint</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+
+                } catch (error) {
+                    console.error('System synchronization exception:', error);
+                    // Failover option: If network intercept fails, forcefully pass normal form submission down the stack
+                    waitlistForm.submit();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
