@@ -11,6 +11,32 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 export const config = {
     api: { responseLimit: false, bodyParser: { sizeLimit: '15mb' } }
 };
+                .complexFilter([
+                    '[0:v][1:v][2:v]concat=n=3:v=1:a=0[v_base]',
+                    // SPEED HACK 1: Drop resolution from 1080p to 720p (720x1280). 
+                    // This cuts the pixel-processing math by over 50%.
+                    '[v_base]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280[v_cropped]',
+                    // Adjusted Fontsize/Margin for the new 720p scale
+                    `[v_cropped]subtitles='${localSubtitles.replace(/'/g, "\\'")}':force_style='Fontname=Arial,Fontsize=16,PrimaryColour=&H00FFFF,Alignment=2,MarginV=120'[v_final]`
+                ])
+                .map('[v_final]')
+                .map('3:a')
+                .videoCodec('libx264')
+                .audioCodec('aac')
+                .outputOptions([
+                    '-pix_fmt yuv420p',
+                    `-t ${totalDuration}`,
+                    // SPEED HACK 2: The absolute fastest compression preset
+                    '-preset ultrafast', 
+                    // SPEED HACK 3: Cap framerate at 24fps (cinematic standard).
+                    // Default is often 30 or 60. Fewer frames = faster render.
+                    '-r 24',
+                    // SPEED HACK 4: Constant Rate Factor (CRF). 
+                    // 28 is slightly lower quality, but heavily reduces CPU load.
+                    '-crf 28' 
+                ])
+
+
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method disallowed' });
