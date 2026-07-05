@@ -194,45 +194,122 @@
                     </div>
                 `;
 
-                // Sub-Event Interceptor: Listen for voice synthesis trigger requests
+                                // Sub-Event Interceptor: Dual-Route Audio Pipeline & Visual Sync Core
                 document.getElementById('synthesize-voice-btn').addEventListener('click', async () => {
                     const voiceBtn = document.getElementById('synthesize-voice-btn');
                     const audioContainer = document.getElementById('audio-container');
+                    const playerBg = document.getElementById('player-bg');
+                    const playerCaption = document.getElementById('player-caption');
+                    const playerTimer = document.getElementById('player-timer');
                     
                     voiceBtn.disabled = true;
-                    voiceBtn.innerText = "STREAMING MP3 BINARY BUFFER...";
+                    voiceBtn.innerText = "INITIALIZING VOICE GENERATION...";
                     
+                    let localPlaybackInterval = null;
+
+                    // Centralized visual state synchronizer factory
+                    const createTimelineUpdater = (getCurrentSeconds) => {
+                        return () => {
+                            const currentTime = getCurrentSeconds();
+                            playerTimer.innerText = `${currentTime.toFixed(1)}s`;
+
+                            // Frame Switching Boundaries
+                            if (currentTime < 4.0) {
+                                // Scene 1: The Hook Frame
+                                playerCaption.innerText = hookText;
+                                playerCaption.className = "text-rose-400 font-black tracking-wide text-xs uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/40 py-1.5 px-2 rounded transition-all";
+                                playerBg.src = `https://image.pollinations.ai/p/${hookPrompt}?width=360&height=640&seed=1`;
+                            } else if (currentTime >= 4.0 && currentTime < 16.0) {
+                                // Scene 2: The Core Telemetry Dispatch Body
+                                playerCaption.innerText = bodyText;
+                                playerCaption.className = "text-yellow-400 font-black tracking-wide text-xs uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/40 py-1.5 px-2 rounded transition-all";
+                                playerBg.src = `https://image.pollinations.ai/p/${bodyPrompt1}?width=360&height=640&seed=2`;
+                            } else {
+                                // Scene 3: High Conversion Call To Action
+                                playerCaption.innerText = "👉 " + ctaText;
+                                playerCaption.className = "text-green-400 font-black tracking-wide text-xs uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/40 py-1.5 px-2 rounded transition-all";
+                                playerBg.src = `https://image.pollinations.ai/p/${ctaPrompt}?width=360&height=640&seed=3`;
+                            }
+                        };
+                    };
+
                     try {
+                        // --- ROUTE 1: PRIMARY SERVER-SIDE COMPILATION ATTEMPT ---
+                        voiceBtn.innerText = "CONTACTING SERVER VOICE FLEET...";
                         const vResponse = await fetch('/api/agent-voice', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ text: fullNarrationScript })
                         });
                         
+                        if (!vResponse.ok) throw new Error("Upstream route offline.");
                         const vData = await vResponse.json();
-                        if (!vResponse.ok || !vData.success) throw new Error(vData.message || 'Audio compilation crash.');
+                        if (!vData.success) throw new Error(vData.message || 'Data stream rejection.');
                         
-                        audioContainer.innerHTML = `<audio controls src="${vData.audio}" class="w-full h-8 mt-1 accent-green-500"></audio>`;
+                        audioContainer.innerHTML = `<audio id="active-narrator" controls src="${vData.audio}" class="w-full h-8 mt-1 accent-green-500"></audio>`;
                         audioContainer.classList.remove('hidden');
-                        voiceBtn.innerText = "AUDIO COMPILED SUCCESSFULLY";
+                        voiceBtn.innerText = "PLAYING HQ SEVER AUDIO TRACK";
+
+                        const audioTrack = document.getElementById('active-narrator');
+                        audioTrack.play();
+
+                        const syncVisuals = createTimelineUpdater(() => audioTrack.currentTime);
+                        audioTrack.addEventListener('timeupdate', syncVisuals);
+                        audioTrack.addEventListener('ended', () => {
+                            voiceBtn.disabled = false;
+                            voiceBtn.innerText = "REPLAY DISPATCH CONSOLE RUN";
+                        });
+
                     } catch(vErr) {
-                        alert(`Voice Synthesis Node Error: ${vErr.message}`);
-                        voiceBtn.disabled = false;
-                        voiceBtn.innerText = "RETRY VOICE SYNTHESIS INITIALIZATION";
+                        // --- ROUTE 2: CLIENT SIDE LOCAL CORE FALLBACK (INDESTRUCTIBLE & FREE) ---
+                        console.warn("Backend node unresolvable. Switching to local browser speech engine.", vErr);
+                        voiceBtn.innerText = "LOCAL SPEECH RUN (SERVER BYPASSED)";
+                        
+                        if (!('speechSynthesis' in window)) {
+                            alert("Native browser text-to-speech modules are missing from this device.");
+                            voiceBtn.disabled = false;
+                            voiceBtn.innerText = "GENERATION SYSTEM BROKEN";
+                            return;
+                        }
+
+                        // Stop any residual local audio tasks
+                        window.speechSynthesis.cancel();
+                        
+                        const cleanScriptText = fullNarrationScript.replace(/[\[\]]/g, '');
+                        const utterance = new SpeechSynthesisUtterance(cleanScriptText);
+                        
+                        // Select an available local voice asset from your operating system
+                        const internalVoices = window.speechSynthesis.getVoices();
+                        const localizedVoice = internalVoices.find(v => v.name.includes('Google') || v.name.includes('Natural')) || internalVoices[0];
+                        
+                        if (localizedVoice) utterance.voice = localizedVoice;
+                        utterance.rate = 1.05;  // Accelerated tempo pacing
+                        utterance.pitch = 0.95; // Grounded baseline pitch adjustment
+
+                        audioContainer.classList.add('hidden'); // Clear out the broken player frame
+                        
+                        // Run a highly performant client clock loop since local speech doesn't have an native 'timeupdate' event listener
+                        const engineStartTimestamp = Date.now();
+                        const syncVisuals = createTimelineUpdater(() => (Date.now() - engineStartTimestamp) / 1000);
+                        localPlaybackInterval = setInterval(syncVisuals, 100);
+
+                        utterance.onend = () => {
+                            clearInterval(localPlaybackInterval);
+                            voiceBtn.disabled = false;
+                            voiceBtn.innerText = "REPLAY LOCAL ENGINE PREVIEW";
+                        };
+
+                        utterance.onerror = (err) => {
+                            console.error("Local core audio component failure:", err);
+                            clearInterval(localPlaybackInterval);
+                            voiceBtn.disabled = false;
+                            voiceBtn.innerText = "RETRY DUAL COMPILATION PROCESS";
+                        };
+
+                        window.speechSynthesis.speak(utterance);
                     }
                 });
 
-            } catch (err) {
-
-                console.error(err);
-                statusBadge.innerText = "CRIT_ERR";
-                statusBadge.className = "text-red-500 font-bold";
-                outputDisplay.innerHTML = `<p class="text-red-400 font-bold">> Exception Root: ${err.message}\n\n> Fix Actions:\n1. Verify GROQ_API_KEY inside Vercel Dashboard Environment Variables.\n2. Ensure you ran a full redeploy after adding the key.</p>`;
-            } finally {
-                generateBtn.disabled = false;
-                generateBtn.innerText = "EXECUTE AGENT INFERENCE";
-            }
-        });
     </script>
 
                         
