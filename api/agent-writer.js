@@ -18,8 +18,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ success: false, message: 'Missing Groq API credential infrastructure.' });
     }
 
-    // Ping Groq's blazing-fast inference endpoint
-    const response = await fetch('[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)', {
+    // CLEANED URL STRING: Stripped of any invisible markdown link wrappers
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,
@@ -27,16 +27,14 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'llama-3.1-8b-instant', 
-        temperature: 0.1, // FIX 1: Low temperature forces structural discipline and stops conversational filler
+        temperature: 0.1, 
         messages: [
           {
             role: 'system',
-            // FIX 2: Explicitly commanding JSON format here satisfies Groq's JSON Mode criteria
             content: 'You are the lead Creative Director Agent for the DGEA Network. Your voice is revolutionary, calm, authoritative, and deeply persuasive. Avoid corporate fluff, hype words, or emojis. CRITICAL: You must respond ONLY with a raw, valid JSON object. Do not include markdown blocks, backticks, or prologue/epilogue text.'
           },
           {
             role: 'user',
-            // FIX 3: Swapped numbered guidelines out for an absolute structural syntax map
             content: `
               Using this DGEA Framework Context: "${MANIFESTO_CONTEXT}"
               Write a 9:16 vertical short-form video script addressing this current macroeconomic event: "${currentTopic || 'General inflation and purchasing power loss'}"
@@ -56,12 +54,10 @@ export default async function handler(req, res) {
 
     const aiData = await response.json();
     
-    // Safety check for backend processing
     if (!response.ok) {
       return res.status(response.status).json({ success: false, message: aiData.error?.message || 'Groq Core API rejection.' });
     }
 
-    // Parse verified payload content safely
     const rawContent = aiData.choices[0].message.content;
     const generatedScript = JSON.parse(rawContent);
     
