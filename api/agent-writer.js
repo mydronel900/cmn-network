@@ -19,7 +19,8 @@ export default async function handler(req, res) {
                     content: `Generate a script about: ${currentTopic}`
                 }
             ],
-            model: "llama3-70b-8192",
+            // FIXED: Updated to Groq's active 70B model
+            model: "llama-3.3-70b-versatile",
             response_format: { type: "json_object" }
         });
 
