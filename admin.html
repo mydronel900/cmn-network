@@ -315,18 +315,31 @@
                 return Object.values(field).join(' ');
             };
 
-            try {
+                        try {
                 const response = await fetch('/api/agent-writer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ currentTopic: topicValue })
                 });
 
-                const data = await response.json();
-                if (!response.ok || !data.success) throw new Error(data.message || 'Server returned parsing structural failure.');
+                // SAFE PARSING: Checks if the server sent JSON or an HTML error page
+                const contentType = response.headers.get("content-type");
+                let data;
+                
+                if (contentType && contentType.includes("application/json")) {
+                    data = await response.json();
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Server route crashed. Vercel returned non-JSON. Check Vercel logs.`);
+                }
+
+                if (!response.ok || !data.success) throw new Error(data.message || 'Server structural failure.');
 
                 statusBadge.innerText = "SUCCESS";
                 statusBadge.className = "text-green-400 font-bold";
+                
+                // ... (Keep the rest of your UI generation logic exactly as it was here) ...
+
                 
                 // Save context states globally for access by runtime exporter
                 currentHookText = extractField(data, 'hook');
