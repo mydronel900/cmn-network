@@ -19,33 +19,38 @@ export default async function handler(req, res) {
     }
 
     // Ping Groq's blazing-fast inference endpoint
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('[https://api.groq.com/openai/v1/chat/completions](https://api.groq.com/openai/v1/chat/completions)', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.1-8b-instant', // Ultra low latency open-source model
+        model: 'llama-3.1-8b-instant', 
+        temperature: 0.1, // FIX 1: Low temperature forces structural discipline and stops conversational filler
         messages: [
           {
             role: 'system',
-            content: 'You are the lead Creative Director Agent for the DGEA Network. Your voice is revolutionary, calm, authoritative, and deeply persuasive. Avoid corporate fluff, hype words, or emojis.'
+            // FIX 2: Explicitly commanding JSON format here satisfies Groq's JSON Mode criteria
+            content: 'You are the lead Creative Director Agent for the DGEA Network. Your voice is revolutionary, calm, authoritative, and deeply persuasive. Avoid corporate fluff, hype words, or emojis. CRITICAL: You must respond ONLY with a raw, valid JSON object. Do not include markdown blocks, backticks, or prologue/epilogue text.'
           },
           {
             role: 'user',
+            // FIX 3: Swapped numbered guidelines out for an absolute structural syntax map
             content: `
               Using this DGEA Framework Context: "${MANIFESTO_CONTEXT}"
               Write a 9:16 vertical short-form video script addressing this current macroeconomic event: "${currentTopic || 'General inflation and purchasing power loss'}"
               
-              Format your output strictly as a clean JSON object containing:
-              1. "hook": A magnetic 3-second visual and spoken opener.
-              2. "body": 3 concise, hard-hitting facts breaking down the issue and presenting DGEA as the architecture.
-              3. "cta": A direct call to action to secure a Genesis Node ID at cmn.network.
+              Output a JSON object that strictly maps to this key template layout:
+              {
+                "hook": "A magnetic 3-second visual and spoken opener text",
+                "body": "3 concise, hard-hitting facts breaking down the issue and presenting DGEA as the architecture",
+                "cta": "A direct call to action to secure a Genesis Node ID at cmn.network"
+              }
             `
           }
         ],
-        response_format: { type: "json_object" } // Enforce flawless JSON structure output
+        response_format: { type: "json_object" } 
       })
     });
 
@@ -56,11 +61,14 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ success: false, message: aiData.error?.message || 'Groq Core API rejection.' });
     }
 
-    const generatedScript = JSON.parse(aiData.choices[0].message.content);
+    // Parse verified payload content safely
+    const rawContent = aiData.choices[0].message.content;
+    const generatedScript = JSON.parse(rawContent);
+    
     return res.status(200).json({ success: true, script: generatedScript });
 
   } catch (error) {
     console.error('Do Fleet Operational Interruption:', error);
-    return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: `Pipeline Exception: ${error.message}` });
   }
 }
