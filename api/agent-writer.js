@@ -2,7 +2,7 @@ import { Groq } from 'groq-sdk';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// NEW: The Visual Agent sub-routine
+// The Visual Agent: Fetches imagery based on the script's specific aesthetic
 async function fetchVisuals(searchQuery) {
     try {
         const response = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&orientation=portrait&size=large&per_page=3`, {
@@ -14,12 +14,9 @@ async function fetchVisuals(searchQuery) {
         if (!response.ok) throw new Error('Pexels API failed');
         
         const data = await response.json();
-        
-        // Extract just the raw, high-res image URLs
         return data.photos.map(photo => photo.src.large2x || photo.src.large);
     } catch (error) {
-        console.warn("Visual Agent failed, using fallbacks:", error);
-        // Fallback images so the video rendering never crashes
+        console.warn("Visual Agent fallback triggered:", error);
         return [
             "https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg",
             "https://images.pexels.com/photos/15286/pexels-photo.jpg",
@@ -34,16 +31,29 @@ export default async function handler(req, res) {
     try {
         const { currentTopic } = req.body;
 
-        // 1. Tell Groq to also generate a visual search query
         const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: "system",
-                    content: "You are a media production AI. Return ONLY a valid JSON object with keys: 'hook', 'body', 'cta', and 'visualQuery'. 'hook' should be short/punchy. 'body' should be a script body. 'cta' should be a call to action. 'visualQuery' must be a 1-2 word string describing the aesthetic of the video (e.g., 'cyberpunk city', 'dark forest', 'gold coins'). Do not include any extra text."
+                    content: `You are the lead DGEA Evangelist. Your audience is Gen Z, Gen Alpha, and forward-thinking Millennials. 
+                    
+                    COMMUNICATION STYLE RULES:
+                    1. NO CORPORATE JARGON. Never use words like 'infrastructure,' 'architecture,' or 'protocol' unless they are vital. 
+                    2. INTERNET NATIVE. Write like a creator on TikTok/Reels. Use short, punchy sentences.
+                    3. THE 'POV' APPROACH. Start with 'POV:' or a direct observation about their reality (e.g., 'Stop working 9-5s for money that loses value every month.').
+                    4. VIBE CHECK. Focus on 'Individual Sovereignty' and 'Financial Freedom' as the ultimate vibe. 
+                    5. THE GLITCH. Frame traditional finance as a failing game. Frame DGEA as the 'hidden cheat code' that lets them win.
+                    6. ELI5. Explain complex economics as if you're explaining a video game mechanic.
+                    
+                    Return ONLY a valid JSON object with keys: "hook", "body", "cta", "visualQuery". 
+                    - 'hook': Must be a scroll-stopper (under 5 seconds). 
+                    - 'body': Punchy, fast-paced, relatable, and educational.
+                    - 'cta': Low-friction invitation to join the 'Common' revolution.
+                    - 'visualQuery': 1-2 words defining the visual aesthetic (e.g., 'cyberpunk city').`
                 },
                 {
                     role: "user",
-                    content: `Generate a script about: ${currentTopic}`
+                    content: `Create a script about: ${currentTopic}. Focus on why the current financial system is failing and how the DGEA 'glitch' fixes it.`
                 }
             ],
             model: "llama-3.3-70b-versatile",
@@ -51,22 +61,20 @@ export default async function handler(req, res) {
         });
 
         const scriptData = JSON.parse(completion.choices[0].message.content);
-        const aestheticQuery = scriptData.visualQuery || currentTopic;
+        
+        // Execute visual agent based on the script's aesthetic
+        const automatedImages = await fetchVisuals(scriptData.visualQuery || currentTopic);
 
-        // 2. Unleash the Visual Agent to fetch the images based on Groq's query
-        const automatedImages = await fetchVisuals(aestheticQuery);
-
-        // 3. Return the complete package to the frontend
         return res.status(200).json({ 
             success: true, 
-            hook: scriptData.hook || "CRITICAL ALERT", 
-            body: scriptData.body || "Data streams compiling...", 
-            cta: scriptData.cta || "Initialize sequence.",
-            images: automatedImages // Pass the automated images back to the dashboard
+            hook: scriptData.hook, 
+            body: scriptData.body, 
+            cta: scriptData.cta,
+            images: automatedImages 
         });
 
     } catch (error) {
-        console.error("Writer Logic Error:", error);
+        console.error("DGEA Strategy Error:", error);
         return res.status(500).json({ success: false, message: error.message });
     }
 }
