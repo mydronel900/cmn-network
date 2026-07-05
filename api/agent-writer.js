@@ -1,25 +1,39 @@
-import { put } from '@vercel/blob';
+import { Groq } from 'groq-sdk';
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export default async function handler(req, res) {
-    const { text } = req.body;
+    if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method not allowed' });
 
     try {
-        // 1. Call your preferred TTS Provider (e.g., ElevenLabs)
-        const ttsResponse = await fetch('https://api.elevenlabs.io/v1/text-to-speech/...', {
-            method: 'POST',
-            // ... headers and body ...
-        });
-        const audioBuffer = await ttsResponse.buffer();
+        const { currentTopic } = req.body;
 
-        // 2. Save the audio to Vercel Blob to get a public URL
-        const blob = await put(`voice_${Date.now()}.mp3`, audioBuffer, {
-            access: 'public',
+        const completion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a media production AI. Return ONLY a valid JSON object with keys: 'hook', 'body', 'cta'. 'hook' should be short/punchy. 'body' should be a script body. 'cta' should be a call to action. Do not include any markdown or extra text."
+                },
+                {
+                    role: "user",
+                    content: `Generate a script about: ${currentTopic}`
+                }
+            ],
+            model: "llama3-70b-8192",
+            response_format: { type: "json_object" }
         });
 
-        // 3. Return the PUBLIC URL, not a stream
-        return res.status(200).json({ success: true, audio: blob.url });
-        
+        const scriptData = JSON.parse(completion.choices[0].message.content);
+
+        return res.status(200).json({ 
+            success: true, 
+            hook: scriptData.hook || "CRITICAL ALERT", 
+            body: scriptData.body || "Data streams compiling...", 
+            cta: scriptData.cta || "Initialize sequence." 
+        });
+
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Server TTS failed." });
+        console.error("Writer Logic Error:", error);
+        return res.status(500).json({ success: false, message: error.message });
     }
 }
