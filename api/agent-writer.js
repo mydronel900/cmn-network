@@ -1,70 +1,25 @@
+import { put } from '@vercel/blob';
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
-  }
+    const { text } = req.body;
 
-  const { currentTopic } = req.body;
+    try {
+        // 1. Call your preferred TTS Provider (e.g., ElevenLabs)
+        const ttsResponse = await fetch('https://api.elevenlabs.io/v1/text-to-speech/...', {
+            method: 'POST',
+            // ... headers and body ...
+        });
+        const audioBuffer = await ttsResponse.buffer();
 
-  const MANIFESTO_CONTEXT = `
-    The Decentralized Global Economic Architecture (DGEA) replaces fiat monetary printing with resource anchoring (Energy, Water, Space). 
-    It eliminates the 30% middleman extraction tax imposed by corporate tech platforms using zero-friction parallel routing networks.
-    Governance is strictly 1 verified human identity = 1 node signature. Capital cannot buy voting weight.
-    Stage 1 is the Information Faucet: users lock in Genesis Node IDs at cmn.network.
-  `;
+        // 2. Save the audio to Vercel Blob to get a public URL
+        const blob = await put(`voice_${Date.now()}.mp3`, audioBuffer, {
+            access: 'public',
+        });
 
-  try {
-    const groqApiKey = process.env.GROQ_API_KEY;
-    if (!groqApiKey) {
-      return res.status(500).json({ success: false, message: 'Missing Groq API credential infrastructure.' });
+        // 3. Return the PUBLIC URL, not a stream
+        return res.status(200).json({ success: true, audio: blob.url });
+        
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Server TTS failed." });
     }
-
-    // CLEANED URL STRING: Stripped of any invisible markdown link wrappers
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${groqApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant', 
-        temperature: 0.1, 
-        messages: [
-          {
-            role: 'system',
-            content: 'You are the lead Creative Director Agent for the DGEA Network. Your voice is revolutionary, calm, authoritative, and deeply persuasive. Avoid corporate fluff, hype words, or emojis. CRITICAL: You must respond ONLY with a raw, valid JSON object. Do not include markdown blocks, backticks, or prologue/epilogue text.'
-          },
-          {
-            role: 'user',
-            content: `
-              Using this DGEA Framework Context: "${MANIFESTO_CONTEXT}"
-              Write a 9:16 vertical short-form video script addressing this current macroeconomic event: "${currentTopic || 'General inflation and purchasing power loss'}"
-              
-              Output a JSON object that strictly maps to this key template layout:
-              {
-                "hook": "A magnetic 3-second visual and spoken opener text",
-                "body": "3 concise, hard-hitting facts breaking down the issue and presenting DGEA as the architecture",
-                "cta": "A direct call to action to secure a Genesis Node ID at cmn.network"
-              }
-            `
-          }
-        ],
-        response_format: { type: "json_object" } 
-      })
-    });
-
-    const aiData = await response.json();
-    
-    if (!response.ok) {
-      return res.status(response.status).json({ success: false, message: aiData.error?.message || 'Groq Core API rejection.' });
-    }
-
-    const rawContent = aiData.choices[0].message.content;
-    const generatedScript = JSON.parse(rawContent);
-    
-    return res.status(200).json({ success: true, script: generatedScript });
-
-  } catch (error) {
-    console.error('Do Fleet Operational Interruption:', error);
-    return res.status(500).json({ success: false, message: `Pipeline Exception: ${error.message}` });
-  }
 }
