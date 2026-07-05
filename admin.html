@@ -102,9 +102,32 @@
             statusBadge.className = "text-yellow-500 animate-pulse";
             outputDisplay.innerHTML = `<p class="text-green-500/70 animate-pulse">> Connecting to secure Vercel Edge... \n> Relaying payload to Groq Engine array...</p>`;
 
-            // Helper function to safely unpack strings, objects, or arrays from the model
-            const cleanText = (field) => {
-                if (!field) return '';
+            // Fuzzy locator helper: Recursively deep-searches case-insensitive keys
+            const extractField = (dataContainer, targetKey) => {
+                if (!dataContainer) return '';
+                
+                const deepSearch = (obj, target) => {
+                    if (!obj || typeof obj !== 'object') return null;
+                    
+                    // Match current layer keys case-insensitively
+                    for (let key in obj) {
+                        if (key.toLowerCase().includes(target.toLowerCase())) {
+                            return obj[key];
+                        }
+                    }
+                    // Dive into nested children if present
+                    for (let key in obj) {
+                        if (typeof obj[key] === 'object') {
+                            const result = deepSearch(obj[key], target);
+                            if (result) return result;
+                        }
+                    }
+                    return null;
+                };
+
+                const field = deepSearch(dataContainer, targetKey);
+                if (!field) return `<span class="text-red-400/50 italic">[Key "${targetKey}" absent from response schema]</span>`;
+
                 if (typeof field === 'string') return field;
                 if (Array.isArray(field)) {
                     return field.map(item => typeof item === 'object' ? Object.values(item).join(' — ') : item).join('<br><br>');
@@ -133,20 +156,29 @@
                 // Smoothly map out the structured JSON fields returned by Groq
                 statusBadge.innerText = "SUCCESS";
                 statusBadge.className = "text-green-400 font-bold";
+                
                 outputDisplay.innerHTML = `
                     <div class="space-y-4 animate-[fadeIn_0.3s_ease-out]">
                         <div>
                             <span class="text-green-400 block mb-1 font-bold">[1. THE HOOK - 0:00 to 0:03]</span>
-                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${cleanText(data.script.hook)}</p>
+                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${extractField(data, 'hook')}</p>
                         </div>
                         <div>
                             <span class="text-emerald-400 block mb-1 font-bold">[2. THE DISPATCH BODY - 0:03 to 0:45]</span>
-                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${cleanText(data.script.body)}</p>
+                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${extractField(data, 'body')}</p>
                         </div>
                         <div>
                             <span class="text-blue-400 block mb-1 font-bold">[3. CONVERSION LINK CALL TO ACTION]</span>
-                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${cleanText(data.script.cta)}</p>
+                            <p class="text-gray-200 bg-gray-950/60 p-2.5 rounded border border-gray-900 leading-relaxed">${extractField(data, 'cta')}</p>
                         </div>
+                        
+                        <!-- Telemetry Debugger: Dropdown to view structural alignment instantly -->
+                        <details class="mt-4 pt-2 border-t border-gray-900 cursor-pointer text-[10px] text-gray-500 group">
+                            <summary class="hover:text-gray-300 select-none list-none flex items-center gap-1">
+                                <span class="transition-transform group-open:rotate-90">▶</span> View Raw Telemetry JSON Payload
+                            </summary>
+                            <pre class="mt-2 bg-black/80 p-3 rounded overflow-x-auto text-gray-400 font-mono text-[10px] border border-gray-900 whitespace-pre-wrap">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
                     </div>
                 `;
 
@@ -161,5 +193,5 @@
             }
         });
     </script>
-</body>
-</html>
+
+                        
