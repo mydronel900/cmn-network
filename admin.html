@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybernetic Media Node System v5.0</title>
+    <title>Cybernetic Media Node System v6.0</title>
     <!-- Tailwind CSS Engine for Browser-First Styling Matrix -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -22,7 +22,7 @@
             <h1 class="text-xl font-mono font-black tracking-wider text-green-400 flex items-center gap-2">
                 <span>⚡</span> CMN PRODUCTION DASHBOARD
             </h1>
-            <p class="text-[11px] text-slate-500 font-mono mt-0.5">AUTONOMOUS DISPATCH AND SIGNAL INTERFACE // VERSION 2026.5</p>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5">AUTONOMOUS DISPATCH AND SIGNAL INTERFACE // VERSION 2026.6</p>
         </div>
         <div class="flex items-center gap-4 text-xs font-mono">
             <div id="autopilot-indicator" class="hidden items-center gap-1.5 bg-amber-950/40 border border-amber-900/50 px-2.5 py-1 rounded text-amber-400 animate-pulse">
@@ -37,10 +37,10 @@
 
     <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- MAIN WORKSPACE SIDEBAR INPUT LAYER (5/12 columns to balance the new scraper deck) -->
+        <!-- MAIN WORKSPACE SIDEBAR INPUT LAYER (5/12 columns) -->
         <section class="lg:col-span-5 space-y-6">
             
-            <!-- NEW LAYER: THE TREND SCRAPER (HANDS-FREE INTAKE AGENT) -->
+            <!-- 1. THE TREND SCRAPER (HANDS-FREE INTAKE AGENT) -->
             <div class="bg-slate-950 border border-slate-900 p-5 rounded-xl shadow-xl space-y-4">
                 <div class="border-b border-slate-900 pb-2 flex justify-between items-center">
                     <h2 class="text-xs font-mono font-bold tracking-wide uppercase text-cyan-400 flex items-center gap-1.5">
@@ -88,7 +88,7 @@
                 </div>
             </div>
 
-            <!-- MANUAL MANIFEST OVERRIDE CONTROL LAYER -->
+            <!-- 2. MANUAL MANIFEST OVERRIDE CONTROL LAYER -->
             <div class="bg-slate-950 border border-slate-900 p-5 rounded-xl shadow-xl space-y-4">
                 <div class="border-b border-slate-900 pb-2">
                     <h2 class="text-xs font-mono font-bold tracking-wide uppercase text-slate-400">2. Generation Directives</h2>
@@ -130,6 +130,14 @@
         let autopilotCountdownId = null;
         let selectedFeedType = null;
 
+        // Current Active Variables Storage State Matrix
+        let currentHookText = "";
+        let currentCleanBodyText = "";
+        let currentCleanCtaText = "";
+        let currentHookPrompt = "";
+        let currentBodyPrompt1 = "";
+        let currentCtaPrompt = "";
+
         // --- THE TREND SCRAPER CORE SUB-SYSTEM MAPPING ENGINE ---
         const feedButtons = document.querySelectorAll('.feed-tab-btn');
         const scraperPreview = document.getElementById('scraper-preview');
@@ -147,18 +155,15 @@
                 let targetHeadlineText = "";
 
                 if (feedType === 'crypto') {
-                    // Route A: Fetch high-volatility telemetry parameters via CoinGecko open tracking channels
                     const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=10&page=1&sparkline=false');
                     if (!res.ok) throw new Error("CoinGecko matrix telemetry connection dropped.");
                     const marketCoins = await res.json();
                     
-                    // Filter for a highly relevant price swing element inside the tracking cluster
                     const randomCoinChoice = marketCoins[Math.floor(Math.random() * marketCoins.length)];
                     const changeDirection = randomCoinChoice.price_change_percentage_24h >= 0 ? "surges upward by" : "slides downward to";
                     targetHeadlineText = `Crypto volatility anomaly detected: ${randomCoinChoice.name} (${randomCoinChoice.symbol.toUpperCase()}) ${changeDirection} ${Math.abs(randomCoinChoice.price_change_percentage_24h).toFixed(2)}% trading at a global valuation index of $${randomCoinChoice.current_price.toLocaleString()}`;
                     
                 } else if (feedType === 'tech') {
-                    // Route B: Scrape cutting edge technical documentation streams via open RSS pipeline layers
                     const openRssSource = encodeURIComponent('https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml');
                     const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${openRssSource}`);
                     if (!res.ok) throw new Error("RSS compilation link matrix parsing exception.");
@@ -169,7 +174,6 @@
                     targetHeadlineText = `Breaking tech dispatch: ${topItem.title}. Critical context: ${topItem.description || "System protocol update vector incoming."}`;
                     
                 } else if (feedType === 'macro') {
-                    // Route C: High-impact systemic global macroeconomic shift alerts
                     const macroScrapes = [
                         "Global liquidity patterns shift as central sovereign reserves increase structural yield allocations.",
                         "Decentralized processing node semiconductor production volume hits new scaling thresholds.",
@@ -179,7 +183,6 @@
                     targetHeadlineText = macroScrapes[Math.floor(Math.random() * macroScrapes.length)];
                 }
 
-                // Clean and sanitize string before setting container values
                 targetHeadlineText = targetHeadlineText.replace(/<[^>]*>/g, '').trim();
                 
                 scraperStatus.innerText = "CONNECTED";
@@ -187,10 +190,8 @@
                 scraperPreview.innerText = targetHeadlineText;
                 scraperPreview.className = "text-cyan-300 font-mono font-medium animate-[fadeIn_0.3s_ease-out]";
                 
-                // Inject the scraped vector straight into our core processing buffer pipeline
                 promptInput.value = targetHeadlineText;
 
-                // If Autopilot engine is engaged, programmatically trigger the pipeline executor button
                 if (forceAutopilotTrigger) {
                     document.getElementById('generate-btn').click();
                 }
@@ -203,7 +204,6 @@
             }
         }
 
-        // Handle Feed Tab Selection Visual Switching Matrices
         feedButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 feedButtons.forEach(b => b.classList.remove('bg-cyan-950', 'border-cyan-500', 'text-cyan-400'));
@@ -226,7 +226,6 @@
             }
 
             if (autopilotTimerId) {
-                // Kill active tracking loop loops
                 clearInterval(autopilotTimerId);
                 clearInterval(autopilotCountdownId);
                 autopilotTimerId = null;
@@ -235,14 +234,12 @@
                 autopilotBtn.innerText = "Engage Autopilot Loop";
                 autopilotBtn.className = "flex-1 bg-cyan-950/40 hover:bg-cyan-900/40 text-cyan-400 border border-cyan-900/60 font-mono font-bold text-[11px] py-2 px-3 rounded transition-all uppercase tracking-wider text-center";
             } else {
-                // Engage execution clock loop parameters
                 autopilotBtn.innerText = "DISENGAGE AUTOPILOT";
                 autopilotBtn.className = "flex-1 bg-rose-950/40 hover:bg-rose-900/40 text-rose-400 border border-rose-900/60 font-mono font-bold text-[11px] py-2 px-3 rounded transition-all uppercase tracking-wider text-center";
                 autopilotIndicator.classList.remove('hidden');
 
                 const intervalSeconds = parseInt(document.getElementById('loop-interval').value, 10);
                 
-                // Fire instantly on initial initialization engage
                 executeTrendScrape(selectedFeedType, true);
                 startAutopilotCountdown(intervalSeconds);
 
@@ -276,7 +273,7 @@
         }
 
 
-        // --- CORE CORE GENERATION HANDLER PIPELINE (PREVIOUS PRODUCTION STABLE) ---
+        // --- CORE CORE GENERATION HANDLER PIPELINE ---
         document.getElementById('generate-btn').addEventListener('click', async () => {
             const generateBtn = document.getElementById('generate-btn');
             const outputDisplay = document.getElementById('output-display');
@@ -331,17 +328,18 @@
                 statusBadge.innerText = "SUCCESS";
                 statusBadge.className = "text-green-400 font-bold";
                 
-                const hookText = extractField(data, 'hook');
+                // Save context states globally for access by runtime exporter
+                currentHookText = extractField(data, 'hook');
                 const bodyText = extractField(data, 'body');
                 const ctaText = extractField(data, 'cta');
                 
-                const cleanBodyText = bodyText.replace(/<br>/g, ' ').replace(/[\[\]]/g, '');
-                const cleanCtaText = ctaText.replace(/[\[\]]/g, '');
-                const narrativeSpeechScript = `${cleanBodyText}. ${cleanCtaText}.`;
+                currentCleanBodyText = bodyText.replace(/<br>/g, ' ').replace(/[\[\]]/g, '');
+                currentCleanCtaText = ctaText.replace(/[\[\]]/g, '');
+                const narrativeSpeechScript = `${currentCleanBodyText}. ${currentCleanCtaText}.`;
 
-                const hookPrompt = encodeURIComponent(extractField(data.script?.hook, 'visual') || "cyberpunk warning interface red alert pattern");
-                const bodyPrompt1 = encodeURIComponent(extractField(data.script?.body, 'image') || "mainframe computer data matrix green glow processing nodes");
-                const ctaPrompt = encodeURIComponent("futuristic secure finger digital authorization link loop geometry");
+                currentHookPrompt = encodeURIComponent(extractField(data.script?.hook, 'visual') || "cyberpunk warning interface red alert pattern");
+                currentBodyPrompt1 = encodeURIComponent(extractField(data.script?.body, 'image') || "mainframe computer data matrix green glow processing nodes");
+                currentCtaPrompt = encodeURIComponent("futuristic secure finger digital authorization link loop geometry");
 
                 outputDisplay.innerHTML = `
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-[fadeIn_0.3s_ease-out]">
@@ -354,10 +352,27 @@
                                 <div id="audio-container" class="hidden mt-1"></div>
                             </div>
 
+                            <!-- NEW INCORPORATION: EXPORTER DECK PANEL -->
+                            <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-lg flex flex-col gap-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[9px] text-cyan-400 font-bold tracking-wider uppercase font-mono">📦 INDUSTRIAL MP4 COMPILER</span>
+                                    <span id="export-status-badge" class="text-[9px] font-mono text-slate-500 uppercase">READY</span>
+                                </div>
+                                <button id="export-video-btn" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-2.5 rounded font-mono text-[11px] transition-all uppercase tracking-wide shadow-lg shadow-cyan-950/50">
+                                    Export to Social-Ready .MP4 Container
+                                </button>
+                                <div id="export-progress-container" class="hidden mt-1 space-y-1.5">
+                                    <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                                        <div id="export-progress-bar" class="bg-cyan-400 h-full w-0 transition-all duration-300"></div>
+                                    </div>
+                                    <p id="export-progress-text" class="text-[9px] font-mono text-slate-400 italic">> Initializing rendering worker node arrays...</p>
+                                </div>
+                            </div>
+
                             <div class="space-y-3 font-sans text-xs">
                                 <div>
                                     <span class="text-rose-400 block mb-0.5 font-mono font-bold text-[10px]">[1. VISUAL HOOK OVERLAY]</span>
-                                    <p class="text-slate-300 bg-slate-900/40 p-2.5 rounded border border-slate-900 leading-relaxed">${hookText}</p>
+                                    <p class="text-slate-300 bg-slate-900/40 p-2.5 rounded border border-slate-900 leading-relaxed">${currentHookText}</p>
                                 </div>
                                 <div>
                                     <span class="text-yellow-400 block mb-0.5 font-mono font-bold text-[10px]">[2. SPOKEN REPORT BODY]</span>
@@ -372,7 +387,7 @@
 
                         <div class="lg:col-span-5 flex justify-center">
                             <div class="w-full max-w-[240px] aspect-[9/16] bg-black border-4 border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden relative flex flex-col justify-between p-4 group">
-                                <img id="player-bg" src="https://image.pollinations.ai/p/cyberpunk%20warning%20interface%20red%20alert%20pattern?width=360&height=640&seed=42" 
+                                <img id="player-bg" src="https://image.pollinations.ai/p/${currentHookPrompt}?width=360&height=640&seed=42" 
                                      class="absolute inset-0 w-full h-full object-cover opacity-60 transition-all duration-500 filter brightness-75" alt="Video frame backdrop" />
                                 
                                 <div class="relative z-10 flex justify-between items-center text-[8px] font-mono text-slate-400">
@@ -405,15 +420,14 @@
                     </details>
                 `;
 
-                // Auto-trigger video tracking narration if operating under autonomous loop protocols
-                if (document.getElementById('autopilot-timer-id') !== null || autopilotTimerId !== null) {
+                if (autopilotTimerId !== null) {
                     setTimeout(() => {
                         const playBtn = document.getElementById('synthesize-voice-btn');
                         if (playBtn) playBtn.click();
                     }, 800);
                 }
 
-                // Word Timeline Synchronization sub-routine
+                // Voice Activation Player Routine Elements
                 document.getElementById('synthesize-voice-btn').addEventListener('click', async () => {
                     const voiceBtn = document.getElementById('synthesize-voice-btn');
                     const audioContainer = document.getElementById('audio-container');
@@ -426,8 +440,8 @@
                     voiceBtn.innerText = "INITIALIZING CORE PIPELINE...";
 
                     const prepWords = (t) => t.trim().split(/\s+/).filter(w => w.length > 0);
-                    const bodyWords = prepWords(cleanBodyText);
-                    const ctaWords = prepWords(cleanCtaText);
+                    const bodyWords = prepWords(currentCleanBodyText);
+                    const ctaWords = prepWords(currentCleanCtaText);
 
                     const masterTimeline = [];
                     const introDuration = 2.5;
@@ -438,7 +452,7 @@
                         const segmentSlice = bodyDuration / bodyWords.length;
                         const start = introDuration + (idx * segmentSlice);
                         masterTimeline.push({
-                            text: word, segment: 'DISPATCH', image: bodyPrompt1, color: 'text-yellow-400', startTime: start, endTime: start + segmentSlice
+                            text: word, segment: 'DISPATCH', image: currentBodyPrompt1, color: 'text-yellow-400', startTime: start, endTime: start + segmentSlice
                         });
                     });
 
@@ -446,7 +460,7 @@
                         const segmentSlice = ctaDuration / ctaWords.length;
                         const start = (introDuration + bodyDuration) + (idx * segmentSlice);
                         masterTimeline.push({
-                            text: word, segment: 'CONVERSION', image: ctaPrompt, color: 'text-green-400', startTime: start, endTime: start + segmentSlice
+                            text: word, segment: 'CONVERSION', image: currentCtaPrompt, color: 'text-green-400', startTime: start, endTime: start + segmentSlice
                         });
                     });
 
@@ -465,11 +479,11 @@
                             playerTimer.innerText = `${timeElapsed.toFixed(1)}s`;
 
                             if (timeElapsed < introDuration) {
-                                playerBg.src = `https://image.pollinations.ai/p/${hookPrompt}?width=360&height=640&seed=1`;
+                                playerBg.src = `https://image.pollinations.ai/p/${currentHookPrompt}?width=360&height=640&seed=1`;
                                 playerCaption.innerHTML = `
                                     <div class="flex flex-col items-center justify-center gap-1 text-center w-full px-1 animate-[fadeIn_0.2s_ease-out]">
                                         <span class="text-[7px] text-rose-500 font-bold tracking-widest font-mono uppercase bg-rose-950/40 border border-rose-900/30 px-1.5 py-0.5 rounded mb-0.5">⚠️ DISPATCH CRITICAL</span>
-                                        <p class="text-rose-400 font-sans font-black text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] leading-snug">${hookText}</p>
+                                        <p class="text-rose-400 font-sans font-black text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] leading-snug">${currentHookText}</p>
                                     </div>
                                 `;
                             } else {
@@ -560,6 +574,79 @@
             } finally {
                 generateBtn.disabled = false;
                 promptInput.disabled = false;
+            }
+        });
+
+        // --- INCORPORATED EXPORTER EVENT BINDING ENGINE ---
+        document.body.addEventListener('click', async (e) => {
+            if (e.target && e.target.id === 'export-video-btn') {
+                const exportBtn = document.getElementById('export-video-btn');
+                const progressContainer = document.getElementById('export-progress-container');
+                const progressBar = document.getElementById('export-progress-bar');
+                const progressText = document.getElementById('export-progress-text');
+                const statusBadge = document.getElementById('export-status-badge');
+
+                const audioSrc = document.getElementById('active-narrator')?.src;
+                if (!audioSrc || audioSrc.startsWith('blob:')) {
+                    alert("Please synthesize high-quality server voice audio tracks before executing an MP4 export run. Local hardware fallback audio tracks cannot be exported.");
+                    return;
+                }
+
+                exportBtn.disabled = true;
+                progressContainer.classList.remove('hidden');
+                statusBadge.innerText = "RENDERING";
+                statusBadge.className = "text-cyan-400 font-bold animate-pulse";
+
+                const manifestPayload = {
+                    hookText: currentHookText,
+                    bodyText: currentCleanBodyText,
+                    ctaText: currentCleanCtaText,
+                    audioUrl: audioSrc,
+                    images: [
+                        `https://image.pollinations.ai/p/${currentHookPrompt}?width=1080&height=1920&seed=1`,
+                        `https://image.pollinations.ai/p/${currentBodyPrompt1}?width=1080&height=1920&seed=2`,
+                        `https://image.pollinations.ai/p/${currentCtaPrompt}?width=1080&height=1920&seed=3`
+                    ],
+                    durations: { intro: 2.5, body: 11.5, cta: 4.0 }
+                };
+
+                try {
+                    progressBar.style.width = "25%";
+                    progressText.innerText = "> Sending manifest payload parameters to render farm...";
+
+                    const response = await fetch('/api/agent-exporter', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(manifestPayload)
+                    });
+
+                    progressBar.style.width = "60%";
+                    progressText.innerText = "> Compiling assets and burning overlay subtitles via FFmpeg...";
+
+                    if (!response.ok) throw new Error("Exporter endpoint returned an execution fault code.");
+                    
+                    const blob = await response.blob();
+                    progressBar.style.width = "100%";
+                    progressText.innerText = "> Video compilation processing completed. Downloading file...";
+
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = downloadUrl;
+                    downloadLink.download = `cmn_render_${Date.now()}.mp4`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    downloadLink.remove();
+
+                    statusBadge.innerText = "DONE";
+                    statusBadge.className = "text-emerald-400 font-bold";
+                } catch (err) {
+                    console.error("Export compilation failure:", err);
+                    statusBadge.innerText = "FAILED";
+                    statusBadge.className = "text-rose-500 font-bold";
+                    progressText.innerText = `> Error encountered during processing sequence: ${err.message}`;
+                } finally {
+                    exportBtn.disabled = false;
+                }
             }
         });
     </script>
