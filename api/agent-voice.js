@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     try {
         const { text } = req.body;
         // NOTE: Replace with your actual ElevenLabs Voice ID
-        const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; 
+        const VOICE_ID = "1k39YpzqXZn52BgyLyGO"; 
 
         const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
             method: 'POST',
