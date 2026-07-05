@@ -4,6 +4,8 @@ import os from 'os';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import ffmpeg from 'fluent-ffmpeg';
 
+export const maxDuration = 60; // Forces Vercel Hobby tier to its absolute maximum limit
+
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 export const config = {
