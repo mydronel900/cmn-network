@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybernetic Media Node System v4.1</title>
+    <title>Cybernetic Media Node System v4.2</title>
     <!-- Tailwind CSS Engine for Browser-First Styling Matrix -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -68,6 +68,9 @@
 
     <!-- CORE TELEMETRY EVENT CONTROLLER SYSTEM -->
     <script>
+        // Global anchor reference to kill residual background system clocks on reconfiguration runs
+        let masterPlaybackLoop = null;
+
         document.getElementById('generate-btn').addEventListener('click', async () => {
             const promptInput = document.getElementById('prompt-input');
             const generateBtn = document.getElementById('generate-btn');
@@ -81,23 +84,20 @@
                 return;
             }
 
-            // Lock out interactive layout arrays during processing
+            if (masterPlaybackLoop) clearInterval(masterPlaybackLoop);
+
             generateBtn.disabled = true;
             promptInput.disabled = true;
             statusBadge.innerText = "COMPILING...";
             statusBadge.className = "text-yellow-500 font-bold animate-pulse";
             outputDisplay.innerHTML = `<div class="text-center text-slate-500 animate-pulse font-mono py-12">> Connecting to secure Vercel Edge... \n> Relaying payload to Groq Engine array...</div>`;
 
-            // Fuzzy locator helper: Recursively deep-searches and flattens nested JSON layers cleanly
             const extractField = (dataContainer, targetKey) => {
                 if (!dataContainer) return '';
-                
                 const deepSearch = (obj, target) => {
                     if (!obj || typeof obj !== 'object') return null;
                     for (let key in obj) {
-                        if (key.toLowerCase().includes(target.toLowerCase())) {
-                            return obj[key];
-                        }
+                        if (key.toLowerCase().includes(target.toLowerCase())) return obj[key];
                     }
                     for (let key in obj) {
                         if (typeof obj[key] === 'object') {
@@ -107,22 +107,14 @@
                     }
                     return null;
                 };
-
                 const field = deepSearch(dataContainer, targetKey);
-                if (!field) return `<span class="text-red-400/50 italic">[Key "${targetKey}" absent]</span>`;
-
+                if (!field) return `[Data mapping for context block "${targetKey}" skipped]`;
                 if (typeof field === 'string') return field;
-                if (Array.isArray(field)) {
-                    return field.map(item => typeof item === 'object' ? Object.values(item).join(' — ') : item).join('<br><br>');
-                }
-                if (typeof field === 'object') {
-                    return Object.values(field).join(' — ');
-                }
-                return JSON.stringify(field);
+                if (Array.isArray(field)) return field.map(i => typeof i === 'object' ? Object.values(i).join(' ') : i).join(' ');
+                return Object.values(field).join(' ');
             };
 
             try {
-                // Fetch query targeted directly at your custom writer agent
                 const response = await fetch('/api/agent-writer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -130,7 +122,7 @@
                 });
 
                 const data = await response.json();
-                if (!response.ok || !data.success) throw new Error(data.message || 'Server returned syntax failure.');
+                if (!response.ok || !data.success) throw new Error(data.message || 'Server returned parsing structural failure.');
 
                 statusBadge.innerText = "SUCCESS";
                 statusBadge.className = "text-green-400 font-bold";
@@ -139,14 +131,15 @@
                 const bodyText = extractField(data, 'body');
                 const ctaText = extractField(data, 'cta');
                 
-                const fullNarrationScript = `${hookText}. ${bodyText.replace(/<br>/g, ' ')}. ${ctaText}.`;
+                // AUDIO FIX: Exclude the visual hook from narrative reading track entirely
+                const cleanBodyText = bodyText.replace(/<br>/g, ' ').replace(/[\[\]]/g, '');
+                const cleanCtaText = ctaText.replace(/[\[\]]/g, '');
+                const narrativeSpeechScript = `${cleanBodyText}. ${cleanCtaText}.`;
 
-                // Safe URL encoders to process free AI background graphic assets
-                const hookPrompt = encodeURIComponent(extractField(data.script?.hook, 'visual') || "cyberpunk abstract pattern data line network");
-                const bodyPrompt1 = encodeURIComponent(extractField(data.script?.body?.[0], 'image') || "mainframe computer server processing nodes green glow");
-                const ctaPrompt = encodeURIComponent("abstract dynamic futuristic secure loop geometry");
+                const hookPrompt = encodeURIComponent(extractField(data.script?.hook, 'visual') || "cyberpunk warning interface red alert pattern");
+                const bodyPrompt1 = encodeURIComponent(extractField(data.script?.body, 'image') || "mainframe computer data matrix green glow processing nodes");
+                const ctaPrompt = encodeURIComponent("futuristic secure finger digital authorization link loop geometry");
 
-                // Inject the responsive script monitoring array and 9:16 horizontal canvas simulator
                 outputDisplay.innerHTML = `
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-[fadeIn_0.3s_ease-out]">
                         
@@ -155,22 +148,22 @@
                             <div class="bg-green-950/20 border border-green-900/40 p-3 rounded-lg flex flex-col gap-2">
                                 <span class="text-[9px] text-green-400 font-bold tracking-wider uppercase font-mono">MEDIA DEPLOYMENT ENGINE</span>
                                 <button id="synthesize-voice-btn" class="w-full bg-green-500 hover:bg-green-400 text-black font-bold py-2 rounded font-mono text-[11px] transition-all uppercase tracking-wide">
-                                    Generate Audio & Sync Video Preview
+                                    Generate Audio & Run Kinetic Loop
                                 </button>
                                 <div id="audio-container" class="hidden mt-1"></div>
                             </div>
 
                             <div class="space-y-3 font-sans text-xs">
                                 <div>
-                                    <span class="text-green-400 block mb-0.5 font-mono font-bold text-[10px]">[1. THE HOOK]</span>
+                                    <span class="text-rose-400 block mb-0.5 font-mono font-bold text-[10px]">[1. VISUAL HOOK OVERLAY]</span>
                                     <p class="text-slate-300 bg-slate-900/40 p-2.5 rounded border border-slate-900 leading-relaxed">${hookText}</p>
                                 </div>
                                 <div>
-                                    <span class="text-emerald-400 block mb-0.5 font-mono font-bold text-[10px]">[2. DISPATCH BODY]</span>
+                                    <span class="text-yellow-400 block mb-0.5 font-mono font-bold text-[10px]">[2. SPOKEN REPORT BODY]</span>
                                     <p class="text-slate-300 bg-slate-900/40 p-2.5 rounded border border-slate-900 leading-relaxed">${bodyText}</p>
                                 </div>
                                 <div>
-                                    <span class="text-blue-400 block mb-0.5 font-mono font-bold text-[10px]">[3. CALL TO ACTION]</span>
+                                    <span class="text-green-400 block mb-0.5 font-mono font-bold text-[10px]">[3. SPOKEN CTA COMMAND]</span>
                                     <p class="text-slate-300 bg-slate-900/40 p-2.5 rounded border border-slate-900 leading-relaxed">${ctaText}</p>
                                 </div>
                             </div>
@@ -181,8 +174,8 @@
                             <div class="w-full max-w-[240px] aspect-[9/16] bg-black border-4 border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden relative flex flex-col justify-between p-4 group">
                                 
                                 <!-- Reactive Background Asset Image Container -->
-                                <img id="player-bg" src="https://image.pollinations.ai/p/abstract%20digital%20matrix%20background?width=360&height=640&seed=42" 
-                                     class="absolute inset-0 w-full h-full object-cover opacity-60 transition-all duration-700 filter brightness-75 scale-100" alt="Video frame backdrop" />
+                                <img id="player-bg" src="https://image.pollinations.ai/p/cyberpunk%20warning%20interface%20red%20alert%20pattern?width=360&height=640&seed=42" 
+                                     class="absolute inset-0 w-full h-full object-cover opacity-60 transition-all duration-500 filter brightness-75" alt="Video frame backdrop" />
                                 
                                 <!-- Top Status Bars Overlays -->
                                 <div class="relative z-10 flex justify-between items-center text-[8px] font-mono text-slate-400">
@@ -191,10 +184,10 @@
                                 </div>
 
                                 <!-- Center Dynamic Captions Superposition Panel -->
-                                <div class="relative z-10 my-auto text-center w-full px-1 min-h-[60px] flex items-center justify-center">
-                                    <p id="player-caption" class="text-yellow-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded backdrop-blur-sm transition-all duration-300 w-full">
-                                        Ready to Render
-                                    </p>
+                                <div id="player-caption-wrap" class="relative z-10 my-auto text-center w-full px-1 min-h-[80px] flex items-center justify-center">
+                                    <div id="player-caption" class="w-full text-center text-slate-400 font-mono text-[10px] tracking-wide bg-black/40 py-2 px-1.5 rounded backdrop-blur-sm">
+                                        System Armed.<br>Awaiting Audio Init...
+                                    </div>
                                 </div>
 
                                 <!-- Custom Content Frame Layout Signatures -->
@@ -209,7 +202,7 @@
                         </div>
                     </div>
 
-                    <!-- Toggle-ready debug diagnostics panel -->
+                    <!-- Diagnostics Payload Display Frame -->
                     <details class="mt-6 pt-2 border-t border-slate-900 cursor-pointer text-[10px] text-slate-600 group text-left">
                         <summary class="hover:text-slate-400 select-none list-none flex items-center gap-1">
                             <span class="transition-transform group-open:rotate-90">▶</span> View Raw Stream Variables Payload
@@ -218,7 +211,7 @@
                     </details>
                 `;
 
-                // --- INTEGRATION: KINETIC WORD-BY-WORD AUDIO TIMELINE SYNC ENGINE ---
+                // --- WORD TIMELINE MATRIX GENERATOR SUB-SYSTEM ---
                 document.getElementById('synthesize-voice-btn').addEventListener('click', async () => {
                     const voiceBtn = document.getElementById('synthesize-voice-btn');
                     const audioContainer = document.getElementById('audio-container');
@@ -226,104 +219,142 @@
                     const playerCaption = document.getElementById('player-caption');
                     const playerTimer = document.getElementById('player-timer');
                     
+                    if (masterPlaybackLoop) clearInterval(masterPlaybackLoop);
                     voiceBtn.disabled = true;
-                    voiceBtn.innerText = "INITIALIZING VOICE GENERATION...";
-                    
-                    let localPlaybackInterval = null;
+                    voiceBtn.innerText = "INITIALIZING CORE PIPELINE...";
 
-                    // Clean and tokenize script arrays into tracking structural arrays
-                    const prepWords = (text) => text.trim().split(/\s+/).filter(w => w.length > 0);
-                    const hookWords = prepWords(hookText);
-                    const bodyWords = prepWords(bodyText.replace(/<br>/g, ' '));
-                    const ctaWords = prepWords(ctaText);
+                    // Split textual assets cleanly into word-level metrics arrays
+                    const prepWords = (t) => t.trim().split(/\s+/).filter(w => w.length > 0);
+                    const bodyWords = prepWords(cleanBodyText);
+                    const ctaWords = prepWords(cleanCtaText);
 
-                    // Build a comprehensive flat word map detailing contextual layout weights
+                    // Pre-compute an absolute timeline independent of hardware engine timing drops
                     const masterTimeline = [];
-                    hookWords.forEach(w => masterTimeline.push({ text: w, segment: 'hook', image: hookPrompt, color: 'text-rose-400' }));
-                    bodyWords.forEach(w => masterTimeline.push({ text: w, segment: 'body', image: bodyPrompt1, color: 'text-yellow-400' }));
-                    ctaWords.forEach(w => masterTimeline.push({ text: w, segment: 'cta', image: ctaPrompt, color: 'text-green-400' }));
+                    const introDuration = 2.5; // Seconds allocated to static Visual Hook card
+                    const bodyDuration = 11.5; // Seconds allocated to rolling Report Body text
+                    const ctaDuration = 4.0;   // Seconds allocated to rolling call-to-action link
 
-                    // Centralized renderer to draw the three-word moving window display frame
-                    const renderKineticWindow = (activeWordIndex) => {
-                        if (activeWordIndex < 0 || activeWordIndex >= masterTimeline.length) return;
-                        
-                        const currentWordObj = masterTimeline[activeWordIndex];
-                        
-                        // Pick out surrounding words to form a rolling three-word sequence context
-                        const prevWord = activeWordIndex > 0 ? masterTimeline[activeWordIndex - 1].text : "";
-                        const nextWord = activeWordIndex < masterTimeline.length - 1 ? masterTimeline[activeWordIndex + 1].text : "";
+                    // Map spoken body elements sequentially across the body window
+                    bodyWords.forEach((word, idx) => {
+                        const segmentSlice = bodyDuration / bodyWords.length;
+                        const start = introDuration + (idx * segmentSlice);
+                        masterTimeline.push({
+                            text: word,
+                            segment: 'DISPATCH',
+                            image: bodyPrompt1,
+                            color: 'text-yellow-400',
+                            startTime: start,
+                            endTime: start + segmentSlice
+                        });
+                    });
 
-                        // Update layout graphic backgrounds seamlessly as words roll across boundaries
-                        playerBg.src = `https://image.pollinations.ai/p/${currentWordObj.image}?width=360&height=640&seed=${currentWordObj.segment === 'hook' ? 1 : currentWordObj.segment === 'body' ? 2 : 3}`;
+                    // Map spoken CTA configurations into the end block boundary
+                    ctaWords.forEach((word, idx) => {
+                        const segmentSlice = ctaDuration / ctaWords.length;
+                        const start = (introDuration + bodyDuration) + (idx * segmentSlice);
+                        masterTimeline.push({
+                            text: word,
+                            segment: 'CONVERSION',
+                            image: ctaPrompt,
+                            color: 'text-green-400',
+                            startTime: start,
+                            endTime: start + segmentSlice
+                        });
+                    });
 
-                        // Inject HTML structure creating the popping center focal text emphasis
-                        playerCaption.innerHTML = `
-                            <div class="flex flex-col items-center justify-center gap-1 select-none w-full">
-                                <span class="text-[7px] opacity-40 text-slate-400 tracking-widest uppercase font-mono">${currentWordObj.segment}</span>
-                                <div class="flex items-center justify-center gap-1.5 font-black text-xs uppercase tracking-wide w-full overflow-hidden text-center">
-                                    <span class="opacity-20 text-white scale-90 transition-all duration-150 truncate max-w-[60px]">${prevWord}</span>
-                                    <span class="${currentWordObj.color} text-xs scale-110 bg-slate-950/90 px-2 py-0.5 rounded border border-slate-800/60 shadow-2xl animate-[pulse_0.15s_ease-out] inline-block font-sans drop-shadow-[0_4px_12px_rgba(0,0,0,1)]">${currentWordObj.text}</span>
-                                    <span class="opacity-20 text-white scale-90 transition-all duration-150 truncate max-w-[60px]">${nextWord}</span>
-                                </div>
-                            </div>
-                        `;
+                    const totalSystemDuration = introDuration + bodyDuration + ctaDuration;
+
+                    // Unified playback execution loop
+                    const executeTimelinePlayer = (audioElementReference, fallbackSpeechUtterance) => {
+                        const globalStartTime = Date.now();
+                        let audioTriggered = false;
+
+                        masterPlaybackLoop = setInterval(() => {
+                            let timeElapsed = (Date.now() - globalStartTime) / 1000;
+                            
+                            // Align time parsing dynamically with actual high-quality track if running server route
+                            if (audioElementReference && audioTriggered) {
+                                timeElapsed = introDuration + audioElementReference.currentTime;
+                            }
+
+                            playerTimer.innerText = `${timeElapsed.toFixed(1)}s`;
+
+                            // --- PHASE 1: INTRO VISUAL HOOK BLOCK (0.0s - 2.5s) ---
+                            if (timeElapsed < introDuration) {
+                                playerBg.src = `https://image.pollinations.ai/p/${hookPrompt}?width=360&height=640&seed=1`;
+                                playerCaption.innerHTML = `
+                                    <div class="flex flex-col items-center justify-center gap-1 text-center w-full px-1 animate-[fadeIn_0.2s_ease-out]">
+                                        <span class="text-[7px] text-rose-500 font-bold tracking-widest font-mono uppercase bg-rose-950/40 border border-rose-900/30 px-1.5 py-0.5 rounded mb-0.5">⚠️ DISPATCH CRITICAL</span>
+                                        <p class="text-rose-400 font-sans font-black text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] leading-snug">${hookText}</p>
+                                    </div>
+                                `;
+                            } 
+                            // --- PHASE 2: AUDIO ENGINE NARRATION TRIGGER (2.5s+) ---
+                            else {
+                                if (!audioTriggered) {
+                                    audioTriggered = true;
+                                    if (audioElementReference) {
+                                        audioElementReference.play().catch(e => console.warn("Audio node auto-play intercept:", e));
+                                    } else if (fallbackSpeechUtterance) {
+                                        window.speechSynthesis.speak(fallbackSpeechUtterance);
+                                    }
+                                }
+
+                                // Locate active tracking word data from our deterministic ledger array
+                                const currentWordObj = masterTimeline.find(w => timeElapsed >= w.startTime && timeElapsed < w.endTime);
+                                
+                                if (currentWordObj) {
+                                    const activeIndex = masterTimeline.indexOf(currentWordObj);
+                                    const prevWord = activeIndex > 0 ? masterTimeline[activeIndex - 1].text : "";
+                                    const nextWord = activeIndex < masterTimeline.length - 1 ? masterTimeline[activeIndex + 1].text : "";
+
+                                    playerBg.src = `https://image.pollinations.ai/p/${currentWordObj.image}?width=360&height=640&seed=${currentWordObj.segment === 'DISPATCH' ? 2 : 3}`;
+                                    playerCaption.innerHTML = `
+                                        <div class="flex flex-col items-center justify-center gap-1 select-none w-full animate-[fadeIn_0.1s_ease-out]">
+                                            <span class="text-[6px] opacity-40 text-slate-400 tracking-widest uppercase font-mono">${currentWordObj.segment}</span>
+                                            <div class="flex items-center justify-center gap-1.5 font-black text-xs uppercase tracking-wide w-full overflow-hidden text-center px-1">
+                                                <span class="opacity-15 text-white scale-90 truncate max-w-[55px] font-sans">${prevWord}</span>
+                                                <span class="${currentWordObj.color} text-xs scale-110 bg-slate-950/90 px-2 py-0.5 rounded border border-slate-800/60 shadow-2xl inline-block font-sans drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">${currentWordObj.text}</span>
+                                                <span class="opacity-15 text-white scale-90 truncate max-w-[55px] font-sans">${nextWord}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                            }
+
+                            // Clean exit hook on completion
+                            if (timeElapsed >= totalSystemDuration) {
+                                clearInterval(masterPlaybackLoop);
+                                voiceBtn.disabled = false;
+                                voiceBtn.innerText = "REPLAY DISPATCH RUN";
+                                playerCaption.innerHTML = `<div class="text-green-400 font-mono text-[9px]">Simulation Render Complete.</div>`;
+                            }
+                        }, 40);
                     };
 
                     try {
-                        // ROUTE 1: Server audio track synthesis query
+                        // --- CORE ROUTE 1: ATTEMPT SERVER HQ CONTEXT TRACK SYNTHESIS ---
                         voiceBtn.innerText = "CONTACTING SERVER VOICE FLEET...";
                         const vResponse = await fetch('/api/agent-voice', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ text: fullNarrationScript })
+                            body: JSON.stringify({ text: narrativeSpeechScript })
                         });
                         
-                        if (!vResponse.ok) throw new Error("Upstream route offline.");
+                        if (!vResponse.ok) throw new Error("Server serverless endpoint route unreachable.");
                         const vData = await vResponse.json();
-                        if (!vData.success) throw new Error(vData.message || 'Stream processing fault.');
+                        if (!vData.success) throw new Error(vData.message || 'Stream asset synthesis rejected.');
                         
                         audioContainer.innerHTML = `<audio id="active-narrator" controls src="${vData.audio}" class="w-full h-8 mt-1 accent-green-500"></audio>`;
                         audioContainer.classList.remove('hidden');
-                        voiceBtn.innerText = "PLAYING HQ SERVER AUDIO TRACK";
+                        voiceBtn.innerText = "PLAYING HQ SYSTEM AUDIO SIM";
 
                         const audioTrack = document.getElementById('active-narrator');
-                        
-                        // Calculate word duration spans proportionally once track timeline metrics load
-                        audioTrack.addEventListener('loadedmetadata', () => {
-                            const totalDuration = audioTrack.duration;
-                            const totalChars = masterTimeline.reduce((acc, curr) => acc + curr.text.length, 0);
-                            
-                            let runningTimeMarker = 0;
-                            masterTimeline.forEach(wordObj => {
-                                // Assign duration weight based entirely on relative word string thickness
-                                const wordWeight = wordObj.text.length / totalChars;
-                                const wordDuration = totalDuration * wordWeight;
-                                
-                                wordObj.startTime = runningTimeMarker;
-                                wordObj.endTime = runningTimeMarker + wordDuration;
-                                runningTimeMarker = wordObj.endTime;
-                            });
-                        });
-
-                        audioTrack.play();
-
-                        audioTrack.addEventListener('timeupdate', () => {
-                            const currentTime = audioTrack.currentTime;
-                            playerTimer.innerText = `${currentTime.toFixed(1)}s`;
-
-                            // Locate the active target item from our timing ledger array
-                            const targetIndex = masterTimeline.findIndex(w => currentTime >= w.startTime && currentTime < w.endTime);
-                            if (targetIndex !== -1) renderKineticWindow(targetIndex);
-                        });
-
-                        audioTrack.addEventListener('ended', () => {
-                            voiceBtn.disabled = false;
-                            voiceBtn.innerText = "REPLAY DISPATCH CONSOLE RUN";
-                        });
+                        executeTimelinePlayer(audioTrack, null);
 
                     } catch(vErr) {
-                        // ROUTE 2: Native system hardware speech boundary fallback
-                        console.warn("Server pipeline bypassed. Launching native character map alignment loop.", vErr);
+                        // --- CORE ROUTE 2: BYPASS NETWORK & TRIGGER OS HARDWARE CORE FALLBACK ---
+                        console.warn("Primary channel offline. Transitioning to local hardware synthesis arrays.", vErr);
                         voiceBtn.innerText = "LOCAL SPEECH RUN (SERVER BYPASSED)";
                         
                         if (!('speechSynthesis' in window)) {
@@ -334,57 +365,17 @@
                         }
 
                         window.speechSynthesis.cancel();
-                        
-                        // Compile a continuous clean parsing speech payload string
-                        const activeSpeechString = masterTimeline.map(w => w.text).join(' ');
-                        const utterance = new SpeechSynthesisUtterance(activeSpeechString);
+                        const utterance = new SpeechSynthesisUtterance(narrativeSpeechScript);
                         
                         const internalVoices = window.speechSynthesis.getVoices();
                         const localizedVoice = internalVoices.find(v => v.name.includes('Google') || v.name.includes('Natural')) || internalVoices[0];
                         if (localizedVoice) utterance.voice = localizedVoice;
                         
-                        utterance.rate = 1.0;
-                        utterance.pitch = 1.0;
+                        utterance.rate = 1.05;
+                        utterance.pitch = 1.00;
                         audioContainer.classList.add('hidden');
-                        
-                        // Map character starting point indexes to their exact flat word entries
-                        let characterAccumulator = 0;
-                        masterTimeline.forEach(wordObj => {
-                            wordObj.charStart = characterAccumulator;
-                            characterAccumulator += wordObj.text.length + 1; // Account for separator whitespace spaces
-                            wordObj.charEnd = characterAccumulator;
-                        });
 
-                        const engineStartTimestamp = Date.now();
-                        
-                        // Fire a high frequency system clock frame to tick the hardware clock timer panel
-                        localPlaybackInterval = setInterval(() => {
-                            playerTimer.innerText = `${((Date.now() - engineStartTimestamp) / 1000).toFixed(1)}s`;
-                        }, 100);
-
-                        // Capture hardware text rendering milestones directly from your OS kernel speech thread
-                        utterance.addEventListener('boundary', (event) => {
-                            if (event.name === 'word') {
-                                const speechCharIndex = event.charIndex;
-                                // Find the closest word blocking matching this boundary offset
-                                const matchIndex = masterTimeline.findIndex(w => speechCharIndex >= w.charStart && speechCharIndex < w.charEnd);
-                                if (matchIndex !== -1) renderKineticWindow(matchIndex);
-                            }
-                        });
-
-                        utterance.onend = () => {
-                            clearInterval(localPlaybackInterval);
-                            voiceBtn.disabled = false;
-                            voiceBtn.innerText = "REPLAY LOCAL ENGINE PREVIEW";
-                        };
-
-                        utterance.onerror = (err) => {
-                            clearInterval(localPlaybackInterval);
-                            voiceBtn.disabled = false;
-                            voiceBtn.innerText = "RETRY DUAL COMPILATION PROCESS";
-                        };
-
-                        window.speechSynthesis.speak(utterance);
+                        executeTimelinePlayer(null, utterance);
                     }
                 });
 
