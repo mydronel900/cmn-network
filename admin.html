@@ -22,7 +22,7 @@
             <h1 class="text-xl font-mono font-black tracking-wider text-green-400 flex items-center gap-2">
                 <span>⚡</span> CMN PRODUCTION DASHBOARD
             </h1>
-            <p class="text-[11px] text-slate-500 font-mono mt-0.5">AUTONOMOUS DISPATCH AND SIGNAL INTERFACE // VERATION 2026.4</p>
+            <p class="text-[11px] text-slate-500 font-mono mt-0.5">AUTONOMOUS DISPATCH AND SIGNAL INTERFACE // VERSION 2026.4</p>
         </div>
         <div class="flex items-center gap-2 text-xs font-mono">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -74,7 +74,9 @@
             const outputDisplay = document.getElementById('output-display');
             const statusBadge = document.getElementById('status-badge');
 
-            if (!promptInput.value.trim()) {
+            const topicValue = promptInput.value.trim();
+
+            if (!topicValue) {
                 alert('Please submit a target vector prompt before running compilation.');
                 return;
             }
@@ -84,25 +86,51 @@
             promptInput.disabled = true;
             statusBadge.innerText = "COMPILING...";
             statusBadge.className = "text-yellow-500 font-bold animate-pulse";
-            outputDisplay.innerHTML = `<div class="text-center text-slate-500 animate-pulse font-mono py-12">Synthesizing multi-media script configuration elements via Llama matrix...</div>`;
+            outputDisplay.innerHTML = `<div class="text-center text-slate-500 animate-pulse font-mono py-12">> Connecting to secure Vercel Edge... \n> Relaying payload to Groq Engine array...</div>`;
+
+            // Fuzzy locator helper: Recursively deep-searches and flattens nested JSON layers cleanly
+            const extractField = (dataContainer, targetKey) => {
+                if (!dataContainer) return '';
+                
+                const deepSearch = (obj, target) => {
+                    if (!obj || typeof obj !== 'object') return null;
+                    for (let key in obj) {
+                        if (key.toLowerCase().includes(target.toLowerCase())) {
+                            return obj[key];
+                        }
+                    }
+                    for (let key in obj) {
+                        if (typeof obj[key] === 'object') {
+                            const result = deepSearch(obj[key], target);
+                            if (result) return result;
+                        }
+                    }
+                    return null;
+                };
+
+                const field = deepSearch(dataContainer, targetKey);
+                if (!field) return `<span class="text-red-400/50 italic">[Key "${targetKey}" absent]</span>`;
+
+                if (typeof field === 'string') return field;
+                if (Array.isArray(field)) {
+                    return field.map(item => typeof item === 'object' ? Object.values(item).join(' — ') : item).join('<br><br>');
+                }
+                if (typeof field === 'object') {
+                    return Object.values(field).join(' — ');
+                }
+                return JSON.stringify(field);
+            };
 
             try {
-                // Post standard prompt requests to your serverless engine route
-                const response = await fetch('/api/generate', {
+                // CORRECTED ROUTE AND PAYLOAD KEY
+                const response = await fetch('/api/agent-writer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: promptInput.value })
+                    body: JSON.stringify({ currentTopic: topicValue })
                 });
 
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error(data.message || 'Server returned syntax failure.');
-
-                // Inline validation utility to cleanly fetch deep JSON objects without property faults
-                const extractField = (sourceObj, fieldKey) => {
-                    if (sourceObj?.script?.[fieldKey]?.text) return sourceObj.script[fieldKey].text;
-                    if (sourceObj?.[fieldKey]) return sourceObj[fieldKey];
-                    return "Telemetry processing data missing from layout vector.";
-                };
 
                 statusBadge.innerText = "SUCCESS";
                 statusBadge.className = "text-green-400 font-bold";
@@ -114,8 +142,8 @@
                 const fullNarrationScript = `${hookText}. ${bodyText.replace(/<br>/g, ' ')}. ${ctaText}.`;
 
                 // Safe URL encoders to process free AI background graphic assets
-                const hookPrompt = encodeURIComponent(data.script?.hook?.visual || "cyberpunk abstract pattern data line network");
-                const bodyPrompt1 = encodeURIComponent(data.script?.body?.visual || "mainframe computer server processing nodes green glow");
+                const hookPrompt = encodeURIComponent(extractField(data.script?.hook, 'visual') || "cyberpunk abstract pattern data line network");
+                const bodyPrompt1 = encodeURIComponent(extractField(data.script?.body?.[0], 'image') || "mainframe computer server processing nodes green glow");
                 const ctaPrompt = encodeURIComponent("abstract dynamic futuristic secure loop geometry");
 
                 // Inject the responsive script monitoring array and 9:16 horizontal canvas simulator
