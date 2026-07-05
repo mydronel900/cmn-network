@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybernetic Media Node System v4.0</title>
+    <title>Cybernetic Media Node System v4.1</title>
     <!-- Tailwind CSS Engine for Browser-First Styling Matrix -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -122,7 +122,7 @@
             };
 
             try {
-                // CORRECTED ROUTE AND PAYLOAD KEY
+                // Fetch query targeted directly at your custom writer agent
                 const response = await fetch('/api/agent-writer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -191,8 +191,8 @@
                                 </div>
 
                                 <!-- Center Dynamic Captions Superposition Panel -->
-                                <div class="relative z-10 my-auto text-center px-1">
-                                    <p id="player-caption" class="text-yellow-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded backdrop-blur-sm transition-all duration-300">
+                                <div class="relative z-10 my-auto text-center w-full px-1 min-h-[60px] flex items-center justify-center">
+                                    <p id="player-caption" class="text-yellow-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded backdrop-blur-sm transition-all duration-300 w-full">
                                         Ready to Render
                                     </p>
                                 </div>
@@ -218,7 +218,7 @@
                     </details>
                 `;
 
-                // --- INTEGRATION: CODE FOR INDESTRUCTIBLE HYBRID TEXT-TO-SPEECH DRIVER ---
+                // --- INTEGRATION: KINETIC WORD-BY-WORD AUDIO TIMELINE SYNC ENGINE ---
                 document.getElementById('synthesize-voice-btn').addEventListener('click', async () => {
                     const voiceBtn = document.getElementById('synthesize-voice-btn');
                     const audioContainer = document.getElementById('audio-container');
@@ -231,26 +231,42 @@
                     
                     let localPlaybackInterval = null;
 
-                    // Central timeline rendering manager factory loop
-                    const createTimelineUpdater = (getCurrentSeconds) => {
-                        return () => {
-                            const currentTime = getCurrentSeconds();
-                            playerTimer.innerText = `${currentTime.toFixed(1)}s`;
+                    // Clean and tokenize script arrays into tracking structural arrays
+                    const prepWords = (text) => text.trim().split(/\s+/).filter(w => w.length > 0);
+                    const hookWords = prepWords(hookText);
+                    const bodyWords = prepWords(bodyText.replace(/<br>/g, ' '));
+                    const ctaWords = prepWords(ctaText);
 
-                            if (currentTime < 4.0) {
-                                playerCaption.innerText = hookText;
-                                playerCaption.className = "text-rose-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded transition-all duration-300";
-                                playerBg.src = `https://image.pollinations.ai/p/${hookPrompt}?width=360&height=640&seed=1`;
-                            } else if (currentTime >= 4.0 && currentTime < 15.0) {
-                                playerCaption.innerText = bodyText;
-                                playerCaption.className = "text-yellow-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded transition-all duration-300";
-                                playerBg.src = `https://image.pollinations.ai/p/${bodyPrompt1}?width=360&height=640&seed=2`;
-                            } else {
-                                playerCaption.innerText = "👉 " + ctaText;
-                                playerCaption.className = "text-green-400 font-black tracking-wide text-[11px] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,1)] bg-black/50 py-1.5 px-2 rounded transition-all duration-300";
-                                playerBg.src = `https://image.pollinations.ai/p/${ctaPrompt}?width=360&height=640&seed=3`;
-                            }
-                        };
+                    // Build a comprehensive flat word map detailing contextual layout weights
+                    const masterTimeline = [];
+                    hookWords.forEach(w => masterTimeline.push({ text: w, segment: 'hook', image: hookPrompt, color: 'text-rose-400' }));
+                    bodyWords.forEach(w => masterTimeline.push({ text: w, segment: 'body', image: bodyPrompt1, color: 'text-yellow-400' }));
+                    ctaWords.forEach(w => masterTimeline.push({ text: w, segment: 'cta', image: ctaPrompt, color: 'text-green-400' }));
+
+                    // Centralized renderer to draw the three-word moving window display frame
+                    const renderKineticWindow = (activeWordIndex) => {
+                        if (activeWordIndex < 0 || activeWordIndex >= masterTimeline.length) return;
+                        
+                        const currentWordObj = masterTimeline[activeWordIndex];
+                        
+                        // Pick out surrounding words to form a rolling three-word sequence context
+                        const prevWord = activeWordIndex > 0 ? masterTimeline[activeWordIndex - 1].text : "";
+                        const nextWord = activeWordIndex < masterTimeline.length - 1 ? masterTimeline[activeWordIndex + 1].text : "";
+
+                        // Update layout graphic backgrounds seamlessly as words roll across boundaries
+                        playerBg.src = `https://image.pollinations.ai/p/${currentWordObj.image}?width=360&height=640&seed=${currentWordObj.segment === 'hook' ? 1 : currentWordObj.segment === 'body' ? 2 : 3}`;
+
+                        // Inject HTML structure creating the popping center focal text emphasis
+                        playerCaption.innerHTML = `
+                            <div class="flex flex-col items-center justify-center gap-1 select-none w-full">
+                                <span class="text-[7px] opacity-40 text-slate-400 tracking-widest uppercase font-mono">${currentWordObj.segment}</span>
+                                <div class="flex items-center justify-center gap-1.5 font-black text-xs uppercase tracking-wide w-full overflow-hidden text-center">
+                                    <span class="opacity-20 text-white scale-90 transition-all duration-150 truncate max-w-[60px]">${prevWord}</span>
+                                    <span class="${currentWordObj.color} text-xs scale-110 bg-slate-950/90 px-2 py-0.5 rounded border border-slate-800/60 shadow-2xl animate-[pulse_0.15s_ease-out] inline-block font-sans drop-shadow-[0_4px_12px_rgba(0,0,0,1)]">${currentWordObj.text}</span>
+                                    <span class="opacity-20 text-white scale-90 transition-all duration-150 truncate max-w-[60px]">${nextWord}</span>
+                                </div>
+                            </div>
+                        `;
                     };
 
                     try {
@@ -271,18 +287,43 @@
                         voiceBtn.innerText = "PLAYING HQ SERVER AUDIO TRACK";
 
                         const audioTrack = document.getElementById('active-narrator');
+                        
+                        // Calculate word duration spans proportionally once track timeline metrics load
+                        audioTrack.addEventListener('loadedmetadata', () => {
+                            const totalDuration = audioTrack.duration;
+                            const totalChars = masterTimeline.reduce((acc, curr) => acc + curr.text.length, 0);
+                            
+                            let runningTimeMarker = 0;
+                            masterTimeline.forEach(wordObj => {
+                                // Assign duration weight based entirely on relative word string thickness
+                                const wordWeight = wordObj.text.length / totalChars;
+                                const wordDuration = totalDuration * wordWeight;
+                                
+                                wordObj.startTime = runningTimeMarker;
+                                wordObj.endTime = runningTimeMarker + wordDuration;
+                                runningTimeMarker = wordObj.endTime;
+                            });
+                        });
+
                         audioTrack.play();
 
-                        const syncVisuals = createTimelineUpdater(() => audioTrack.currentTime);
-                        audioTrack.addEventListener('timeupdate', syncVisuals);
+                        audioTrack.addEventListener('timeupdate', () => {
+                            const currentTime = audioTrack.currentTime;
+                            playerTimer.innerText = `${currentTime.toFixed(1)}s`;
+
+                            // Locate the active target item from our timing ledger array
+                            const targetIndex = masterTimeline.findIndex(w => currentTime >= w.startTime && currentTime < w.endTime);
+                            if (targetIndex !== -1) renderKineticWindow(targetIndex);
+                        });
+
                         audioTrack.addEventListener('ended', () => {
                             voiceBtn.disabled = false;
                             voiceBtn.innerText = "REPLAY DISPATCH CONSOLE RUN";
                         });
 
                     } catch(vErr) {
-                        // ROUTE 2: Indestructible browser speech engine safety fallback
-                        console.warn("Server engine unreachable. Transitioning audio query to browser layer.", vErr);
+                        // ROUTE 2: Native system hardware speech boundary fallback
+                        console.warn("Server pipeline bypassed. Launching native character map alignment loop.", vErr);
                         voiceBtn.innerText = "LOCAL SPEECH RUN (SERVER BYPASSED)";
                         
                         if (!('speechSynthesis' in window)) {
@@ -294,21 +335,42 @@
 
                         window.speechSynthesis.cancel();
                         
-                        const cleanScriptText = fullNarrationScript.replace(/[\[\]]/g, '');
-                        const utterance = new SpeechSynthesisUtterance(cleanScriptText);
+                        // Compile a continuous clean parsing speech payload string
+                        const activeSpeechString = masterTimeline.map(w => w.text).join(' ');
+                        const utterance = new SpeechSynthesisUtterance(activeSpeechString);
                         
                         const internalVoices = window.speechSynthesis.getVoices();
                         const localizedVoice = internalVoices.find(v => v.name.includes('Google') || v.name.includes('Natural')) || internalVoices[0];
-                        
                         if (localizedVoice) utterance.voice = localizedVoice;
-                        utterance.rate = 1.05;
-                        utterance.pitch = 0.95;
-
+                        
+                        utterance.rate = 1.0;
+                        utterance.pitch = 1.0;
                         audioContainer.classList.add('hidden');
                         
+                        // Map character starting point indexes to their exact flat word entries
+                        let characterAccumulator = 0;
+                        masterTimeline.forEach(wordObj => {
+                            wordObj.charStart = characterAccumulator;
+                            characterAccumulator += wordObj.text.length + 1; // Account for separator whitespace spaces
+                            wordObj.charEnd = characterAccumulator;
+                        });
+
                         const engineStartTimestamp = Date.now();
-                        const syncVisuals = createTimelineUpdater(() => (Date.now() - engineStartTimestamp) / 1000);
-                        localPlaybackInterval = setInterval(syncVisuals, 100);
+                        
+                        // Fire a high frequency system clock frame to tick the hardware clock timer panel
+                        localPlaybackInterval = setInterval(() => {
+                            playerTimer.innerText = `${((Date.now() - engineStartTimestamp) / 1000).toFixed(1)}s`;
+                        }, 100);
+
+                        // Capture hardware text rendering milestones directly from your OS kernel speech thread
+                        utterance.addEventListener('boundary', (event) => {
+                            if (event.name === 'word') {
+                                const speechCharIndex = event.charIndex;
+                                // Find the closest word blocking matching this boundary offset
+                                const matchIndex = masterTimeline.findIndex(w => speechCharIndex >= w.charStart && speechCharIndex < w.charEnd);
+                                if (matchIndex !== -1) renderKineticWindow(matchIndex);
+                            }
+                        });
 
                         utterance.onend = () => {
                             clearInterval(localPlaybackInterval);
@@ -317,7 +379,6 @@
                         };
 
                         utterance.onerror = (err) => {
-                            console.error("Local core audio element error:", err);
                             clearInterval(localPlaybackInterval);
                             voiceBtn.disabled = false;
                             voiceBtn.innerText = "RETRY DUAL COMPILATION PROCESS";
