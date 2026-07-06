@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Common Network | DGEA Hub</title>
+    <style>
+        :root {
+            --bg-color: #0a0b0d;
+            --card-bg: #12141c;
+            --accent-cyan: #00f2fe;
+            --accent-violet: #7f00ff;
+            --text-main: #f5f6f9;
+            --text-muted: #8a8f98;
+            --border-color: #222633;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 10px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            color: #0a0b0d;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ffffff, #a0a5b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .hero-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-violet));
+        }
+
+        .pov-tag {
+            color: var(--accent-violet);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        p.lead {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 60px;
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.05), rgba(127, 0, 250, 0.05));
+            border: 1px dashed rgba(127, 0, 255, 0.3);
+            border-radius: 16px;
+            padding: 40px 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            color: #0a0b0d;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 14px 36px;
+            border-radius: 30px;
+            box-shadow: 0 4px 25px rgba(127, 0, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 30px rgba(0, 242, 254, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-badge">CMN Network</div>
+            <h1>The Common Protocol</h1>
+            <div class="subtitle">Glitch the system. Reclaim your sovereignty.</div>
+        </header>
+
+        <main>
+            <div class="hero-card">
+                <span class="pov-tag">POV: Your wealth is a leaking bucket</span>
+                <p class="lead">Traditional finance is a broken simulation. Inflation acts as a hidden, parasitic tax on your time, while central bank manipulation eats away your true purchasing power.</p>
+                <p style="color: var(--text-muted);">The Decentralized Global Economic Architecture (DGEA) isn't a bank. It is an alternative parallel economy designed to permanently secure your individual sovereignty.</p>
+            </div>
+
+            <h2 class="section-title">The Cheat Codes</h2>
+            
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Physical Backing</h3>
+                    <p>The Common (CMN) currency is strictly pegged to tangible infrastructure resources: energy, water, and decentralized compute. Zero pure-fiat air.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">🔄</div>
+                    <h3>Mutual Credit Mesh</h3>
+                    <p>Access interest-free liquidity directly from the network. No predatory platform fees. No banking middleman gatekeeping your survival.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">🤝</div>
+                    <h3>Nexus Trust Mesh</h3>
+                    <p>Uncollateralized peer-to-peer social lending structured through cryptography. True human credit capability backed by real network trust.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="card-icon">🤖</div>
+                    <h3>AI & Human Juries</h3>
+                    <p>Decentralized conflict resolution mechanisms powered by open-source LLM layers combined with human consensus matrixes to neutralize systemic collusion.</p>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h2>Ready to enter the network?</h2>
+                <p style="color: var(--text-muted); margin-top: 10px;">Initialize your local nodes, connect your trust profiles, and build the architecture.</p>
+                <a href="#" class="cta-button">Initialize Protocol Node</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>DGEA Protocol Framework &copy; 2026. Secure. Sovereign. Decentralized.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
