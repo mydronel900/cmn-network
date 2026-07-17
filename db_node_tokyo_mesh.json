@@ -1,0 +1,76 @@
+{
+  "trustMesh": {
+    "balances": {
+      "anchor_london_coop": 250,
+      "node_tokyo_mesh": 350,
+      "node_sydney_mesh": 500
+    },
+    "assets": {
+      "anchor_london_coop": {
+        "wheat_local_v1": 70
+      },
+      "node_tokyo_mesh": {
+        "wheat_local_v1": 30
+      },
+      "node_sydney_mesh": {}
+    },
+    "publicKeys": {
+      "oracle_network": "3056301006072a8648ce3d020106052b8104000a03420004d1e4d93876e96bc3b3330787425e938e30183791067441ef803539a03ff85bcdc3f11d6117c52fd327560d6c681894e266382b759e07a6235bbc928c60d1a27a",
+      "anchor_london_coop": "3056301006072a8648ce3d020106052b8104000a03420004e83257a83590fd47b8c9534a290cc995542d1e4a95aab51b225b0d4a3f1146394aa11b0186a08827fa3e50c392d63e5d5c283250ed4c2312089c572c53c7ffb2"
+    },
+    "slashedNodes": [
+      "anchor_london_coop"
+    ]
+  },
+  "oracle": {
+    "registeredAssets": [
+      "wheat_local_v1"
+    ]
+  },
+  "clearing": {
+    "accountActivity": {
+      "535a3bbd96ab1923": {
+        "status": "COMMITTED",
+        "id": "535a3bbd96ab1923",
+        "sender": "anchor_london_coop",
+        "recipient": "node_tokyo_mesh",
+        "amount": 0,
+        "assetId": "wheat_local_v1",
+        "quantity": 30,
+        "oracleAttestation": {
+          "assetId": "wheat_local_v1",
+          "valuePerUnit": 5,
+          "timestamp": 1784128223556,
+          "expiresAt": 1784131823556,
+          "oracleSignature": "3045022100a2a4b799353e825af69d8752770aee9a000894eca1c4de466a6e858c36909d5f022044d207d7f52f36af34b45abdd8b6dfc5e0c67006c7ad5a9158cceb80b4ec77a2",
+          "oraclePublicKey": "3056301006072a8648ce3d020106052b8104000a03420004d1e4d93876e96bc3b3330787425e938e30183791067441ef803539a03ff85bcdc3f11d6117c52fd327560d6c681894e266382b759e07a6235bbc928c60d1a27a"
+        },
+        "nonce": 1,
+        "timestamp": 1784128223558,
+        "signature": "304502210099b0a5c22fbea50a55003aae583658951e1550c1c13e86cc80fbe97b1a8fd10e0220194835a0295751f1f09edfeda7b185ce4ca57ac886fb4c1cf5d95606ddf93fc2",
+        "senderPublicKey": "3056301006072a8648ce3d020106052b8104000a03420004e83257a83590fd47b8c9534a290cc995542d1e4a95aab51b225b0d4a3f1146394aa11b0186a08827fa3e50c392d63e5d5c283250ed4c2312089c572c53c7ffb2"
+      },
+      "59dd533c6c7047d7": {
+        "status": "REVERTED_FRAUD",
+        "id": "59dd533c6c7047d7",
+        "sender": "anchor_london_coop",
+        "recipient": "node_tokyo_mesh",
+        "amount": 0,
+        "assetId": "wheat_local_v1",
+        "quantity": 50,
+        "oracleAttestation": {
+          "assetId": "wheat_local_v1",
+          "valuePerUnit": 5,
+          "timestamp": 1784128226188,
+          "expiresAt": 1784131826188,
+          "oracleSignature": "3045022100fc491ec2ca23d9173d8310fa4573a33409cf93d321ef2ea5e039ed128efd00640220274b3f211556f0c36b105602a831f33b1fb167bd4ac6a08c21c8e2acd57579d6",
+          "oraclePublicKey": "3056301006072a8648ce3d020106052b8104000a03420004d1e4d93876e96bc3b3330787425e938e30183791067441ef803539a03ff85bcdc3f11d6117c52fd327560d6c681894e266382b759e07a6235bbc928c60d1a27a"
+        },
+        "nonce": 2,
+        "timestamp": 1784128226190,
+        "signature": "304402200d68e13cb46fb70d4c1f3f2b34996195a7c09fb40e415fccca4db0ab01dfa49e02204489ae652f6986869c7a6cbeca6998cfd361392d71be704e3604ff57be7ac4e8",
+        "senderPublicKey": "3056301006072a8648ce3d020106052b8104000a03420004e83257a83590fd47b8c9534a290cc995542d1e4a95aab51b225b0d4a3f1146394aa11b0186a08827fa3e50c392d63e5d5c283250ed4c2312089c572c53c7ffb2"
+      }
+    }
+  }
+}

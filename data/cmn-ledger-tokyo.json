@@ -1,0 +1,30 @@
+{
+    "balances": {
+        "anchor_london_coop": 0,
+        "node_tokyo_mesh": 100,
+        "node_sydney_mesh": 0
+    },
+    "vouches": {},
+    "vouchers": {},
+    "publicKeys": {
+        "anchor_london_coop": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAmh8GofBt0LRt+STjksnOo3RYrAdAeZaSf5CIYWIE7X4=\n-----END PUBLIC KEY-----\n"
+    },
+    "wotRegistry": {},
+    "oracleRegistry": {},
+    "accountActivity": {
+        "tx_2c550bbf9669bed3": {
+            "status": "COMMITTED",
+            "sender": "anchor_london_coop",
+            "recipient": "node_tokyo_mesh",
+            "amount": 100,
+            "nonce": 1,
+            "id": "tx_2c550bbf9669bed3",
+            "timestamp": 1784125892664
+        }
+    },
+    "pendingQueue": [],
+    "nonces": {},
+    "slashedNodes": [
+        "anchor_london_coop"
+    ]
+}

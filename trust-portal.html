@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMN Trust Topology Manager</title>
+    <style>
+        :root { --bg: #090d16; --card: #131c2e; --accent: #38bdf8; --text: #f8fafc; --emerald: #34d399; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; }
+        a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+        .nav { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .panel { background: var(--card); border: 1px solid #1e293b; padding: 25px; border-radius: 12px; margin-bottom: 25px; }
+        h2 { margin-top: 0; font-size: 1.3rem; color: var(--accent); }
+        .input-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .field { flex: 1; min-width: 200px; }
+        label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; background: #090d16; border: 1px solid #1e293b; border-radius: 6px; color: white; box-sizing: border-box; }
+        button { padding: 12px 24px; background: var(--emerald); border: none; color: #090d16; font-weight: bold; border-radius: 6px; cursor: pointer; height: 44px; margin-top: 21px; }
+        button:hover { opacity: 0.9; }
+        .network-map { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .edge-card { background: #1e293b; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
+        .node-id { font-family: monospace; font-weight: bold; }
+        .status { font-size: 0.85rem; padding: 6px 12px; background: #090d16; border-radius: 20px; border: 1px solid #334155; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <h1 style="font-size: 1.5rem; margin: 0;">🤝 Trust Line Management Portal</h1>
+            <a href="/">← Back to Main Dashboard</a>
+        </div>
+
+        <!-- Issue Line Panel -->
+        <div class="panel">
+            <h2>Establish Mutual Credit Line Connection</h2>
+            <div class="input-row">
+                <div class="field">
+                    <label>Source Node Address (Trust Issuer)</label>
+                    <input type="text" id="vouch-source" value="user_storage_test">
+                </div>
+                <div class="field">
+                    <label>Target Node Address (Trust Beneficiary)</label>
+                    <input type="text" id="vouch-target" placeholder="e.g., user_bob_creator">
+                </div>
+                <div class="field">
+                    <label>Credit Allocation Limit (CMN)</label>
+                    <input type="number" id="vouch-limit" placeholder="1000">
+                </div>
+                <button onclick="submitTrustLine()">Authorize Line</button>
+            </div>
+            <div id="action-log" style="font-size: 0.85rem; color: var(--accent); display: none; font-family: monospace;"></div>
+        </div>
+
+        <!-- Live Structural Connections -->
+        <div class="panel">
+            <h2>Active Trust Topology Vectors</h2>
+            <div class="network-map" id="map-container">
+                <p style="color: #64748b;">Reading active network trust metrics...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTopology() {
+            try {
+                const res = await fetch('/api/network-status');
+                const data = await res.json();
+                if (!data.success) return;
+
+                const container = document.getElementById('map-container');
+                container.innerHTML = '';
+
+                let connectionsFound = false;
+
+                Object.keys(data.ledger.vouches).forEach(issuer => {
+                    Object.keys(data.ledger.vouches[issuer]).forEach(beneficiary => {
+                        connectionsFound = true;
+                        const limit = data.ledger.vouches[issuer][beneficiary];
+                        
+                        container.innerHTML += `
+                            <div class="edge-card">
+                                <div>
+                                    <span class="node-id" style="color: var(--accent);">${issuer}</span>
+                                    <span style="color: #64748b; margin: 0 10px;">extends line to</span>
+                                    <span class="node-id" style="color: white;">${beneficiary}</span>
+                                </div>
+                                <div class="status">
+                                    Limit Capacity: <span style="color: var(--emerald); font-weight: bold;">${limit.toFixed(2)} CMN</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+
+                if (!connectionsFound) {
+                    container.innerHTML = '<p style="color: #64748b;">No active credit trust vectors mapped on this node cluster yet.</p>';
+                }
+            } catch (err) { console.error("Topology fetch failure:", err); }
+        }
+
+        async function submitTrustLine() {
+            const voucher = document.getElementById('vouch-source').value;
+            const vauchee = document.getElementById('vouch-target').value;
+            const amount = document.getElementById('vouch-limit').value;
+            const log = document.getElementById('action-log');
+
+            log.style.display = 'block';
+            log.innerText = 'Signing topology authorization payload...';
+
+            try {
+                const res = await fetch('/api/add-vouch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ voucher, vauchee, amount })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    log.innerText = `✔ Success: Line established from ${data.voucher} to ${data.vauchee}`;
+                    document.getElementById('vouch-target').value = '';
+                    document.getElementById('vouch-limit').value = '';
+                    loadTopology();
+                } else {
+                    log.innerText = `❌ Error: ${data.error}`;
+                }
+            } catch (err) { log.innerText = 'Connection fault.'; }
+        }
+
+        loadTopology();
+    </script>
+</body>
+</html>

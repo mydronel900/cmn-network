@@ -1,0 +1,29 @@
+{
+    "balances": {
+        "anchor_london_coop": 0,
+        "node_tokyo_mesh": 0,
+        "node_sydney_mesh": 0
+    },
+    "vouches": {},
+    "vouchers": {},
+    "publicKeys": {},
+    "wotRegistry": {},
+    "oracleRegistry": {},
+    "accountActivity": {},
+    "pendingQueue": [
+        {
+            "id": "tx_1b942bfcafd36a86",
+            "sender": "anchor_london_coop",
+            "recipient": "node_sydney_mesh",
+            "amount": 100,
+            "nonce": 1,
+            "timestamp": 1784125892666,
+            "signature": "461b9ea029d9da354c1e14d9c9c8a92396daf570793988719bfc2486b64902f0cc55c8812256900553b02eeecbc3ec683b9758eaa8c3353acf6f7d8588f3eb0b",
+            "senderPublicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAmh8GofBt0LRt+STjksnOo3RYrAdAeZaSf5CIYWIE7X4=\n-----END PUBLIC KEY-----\n"
+        }
+    ],
+    "nonces": {
+        "anchor_london_coop": 2
+    },
+    "slashedNodes": []
+}

@@ -1,0 +1,101 @@
+{
+    "balances": {
+        "user_storage_test": 660,
+        "user_bob_creator": 40,
+        "user_jen_gurl": 65,
+        "user_alice_node": 110,
+        "user_alice_node2": 0,
+        "anchor_london_coop": 0
+    },
+    "vouches": {
+        "user_storage_test": {
+            "user_bob_creator": 10,
+            "user_alice_node2": 5
+        },
+        "user_bob_creator": {},
+        "user_jen_gurl": {},
+        "user_alice_node": {},
+        "user_alice_node2": {}
+    },
+    "vouchers": {
+        "user_storage_test": {
+            "user_alice_node": 25
+        },
+        "user_bob_creator": {
+            "user_storage_test": 10
+        },
+        "user_jen_gurl": {},
+        "user_alice_node": {},
+        "user_alice_node2": {
+            "user_storage_test": 5
+        },
+        "anchor_london_coop": {
+            "user_alice_node": 40
+        }
+    },
+    "publicKeys": {
+        "user_alice_node2": {
+            "crv": "P-256",
+            "ext": true,
+            "key_ops": [
+                "verify"
+            ],
+            "kty": "EC",
+            "x": "jOxl14LwMWA-qFm7SpjPLaiY1BdRsgBoYPNinCrIDtQ",
+            "y": "DqgeqBYw0GSvuOzbWGdKac18MqRoh0Rzp-WGEu4OB1Q"
+        },
+        "user_alice_node": {
+            "crv": "P-256",
+            "ext": true,
+            "key_ops": [
+                "verify"
+            ],
+            "kty": "EC",
+            "x": "n-zBNhX51ZmOKWOv9QXTiGC_3206TcVxgPPSkUrFFqg",
+            "y": "LMsuKrdyfGfjbyb4gkc-wLLwFxTtrNJ2z69KRijsLyM"
+        }
+    },
+    "wotRegistry": {
+        "user_evil_bot": [
+            "anchor_london_coop",
+            "user_alice_node"
+        ],
+        "user_p2p_pioneer": [
+            "anchor_london_coop"
+        ]
+    },
+    "oracleRegistry": {
+        "productiveLand": {
+            "valueUSD": 0,
+            "appraisals": {}
+        },
+        "renewableEnergy": {
+            "valueUSD": 0,
+            "iotDevices": {}
+        },
+        "vitalCommodities": {
+            "valueUSD": 2200,
+            "feeds": {
+                "gold_feed": 2200
+            }
+        },
+        "digitalInfrastructure": {
+            "valueUSD": 0,
+            "nodes": {}
+        }
+    },
+    "accountActivity": {
+        "user_storage_test": {
+            "lastInboundTimestamp": 1784039079709,
+            "isFrozen": false
+        },
+        "user_bob_creator": {
+            "lastInboundTimestamp": 1784039079709,
+            "isFrozen": false
+        },
+        "user_jen_gurl": {
+            "lastInboundTimestamp": 1784039135893,
+            "isFrozen": false
+        }
+    }
+}
