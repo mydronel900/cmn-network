@@ -1,20 +1,12 @@
-import React from 'react';
 import './globals.css';
 
-export const metadata = {
-  title: 'CMN Network - Consumer Portal',
-  description: 'Parallel Cybernetic Macroeconomic Engine',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full bg-zinc-900">
-      <body className="h-full text-zinc-100 antialiased">
-        {children}
+    <html lang="en" className="h-full bg-zinc-950">
+      <body className="h-full text-zinc-100 antialiased selection:bg-emerald-500/20">
+        <main className="flex h-screen overflow-hidden">
+          {children}
+        </main>
       </body>
     </html>
   );

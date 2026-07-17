@@ -1,1 +1,6 @@
-export default { status: 'initialized' };
+export default {
+  status: 'initialized',
+  data: {},
+  get: () => ({}),
+  set: () => {}
+};
