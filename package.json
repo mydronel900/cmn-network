@@ -1,5 +1,4 @@
 {
-//<<<<<<< HEAD
   "name": "cmn-network",
   "version": "1.0.0",
   "private": true,
@@ -13,7 +12,11 @@
   "dependencies": {
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "groq-sdk": "^0.3.3",
+    "@vercel/blob": "^0.23.3",
+    "fluent-ffmpeg": "^2.1.2",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "latest",
@@ -23,18 +26,5 @@
     "postcss": "latest",
     "tailwindcss": "latest",
     "typescript": "^7.0.2"
-  },
-  "allowScripts": {
-    "sharp@0.34.5": true
-=======
-  "name": "cmn-system",
-  "type": "module",
-  "version": "6.0.0",
-  "dependencies": {
-    "groq-sdk": "^0.3.3",
-    "@vercel/blob": "^0.23.3",
-    "fluent-ffmpeg": "^2.1.2",
-    "@ffmpeg-installer/ffmpeg": "^1.1.0"
-//>>>>>>> a123d0b1846a7236b4e725b0b1f82619f5f68980
   }
 }
