@@ -1,5 +1,5 @@
 {
-<<<<<<< HEAD
+//<<<<<<< HEAD
   "name": "cmn-network",
   "version": "1.0.0",
   "private": true,
@@ -35,6 +35,6 @@
     "@vercel/blob": "^0.23.3",
     "fluent-ffmpeg": "^2.1.2",
     "@ffmpeg-installer/ffmpeg": "^1.1.0"
->>>>>>> a123d0b1846a7236b4e725b0b1f82619f5f68980
+//>>>>>>> a123d0b1846a7236b4e725b0b1f82619f5f68980
   }
 }
